@@ -1,0 +1,6 @@
+E:\Personal_Repos\DynamicParameter\DynamicParameter\bin\Debug\DynamicParameter.dll
+E:\Personal_Repos\DynamicParameter\DynamicParameter\bin\Debug\DynamicParameter.pdb
+E:\Personal_Repos\DynamicParameter\DynamicParameter\obj\Debug\DynamicParameter.csprojResolveAssemblyReference.cache
+E:\Personal_Repos\DynamicParameter\DynamicParameter\obj\Debug\DynamicParameter.csproj.CoreCompileInputs.cache
+E:\Personal_Repos\DynamicParameter\DynamicParameter\obj\Debug\DynamicParameter.dll
+E:\Personal_Repos\DynamicParameter\DynamicParameter\obj\Debug\DynamicParameter.pdb
