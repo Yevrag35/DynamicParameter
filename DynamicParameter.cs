@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
 using System.Reflection;
@@ -74,6 +75,7 @@ namespace Dynamic
         }
         public DynamicParameter(string paramName, string[] validatedItems)
         {
+            string[] array = new string[validatedItems.Length];
             Name = paramName;
             ValidatedItems = validatedItems;
         }
