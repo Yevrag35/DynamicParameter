@@ -34,8 +34,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\WindowsPowerShell\3.0\System.Management.Automation.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>Assemblies\System.Management.Automation.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -45,10 +44,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DynamicParameter.cs" />
+    <None Include="DynamicParameter.cs" />
+    <Compile Include="DynLibrary.cs" />
+    <Compile Include="Parameter.cs" />
+    <Compile Include="DynParamEquality.cs" />
+    <Compile Include="Interfaces.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Assemblies\" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="TestEnv\TestDynModule.psd1" />
     <None Include="TestEnv\TestDynModule.psm1" />
