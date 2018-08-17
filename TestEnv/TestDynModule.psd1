@@ -6,7 +6,7 @@
 	DotNetFrameworkVersion = "4.5.2"
 	RootModule = "TestDynModule.psm1"
 	RequiredAssemblies = @(
-		'Assemblies\DynamicParameter.dll'
+		'Assemblies\Dynamic.Parameter.dll'
 	)
 	FunctionsToExport = '*'
 }

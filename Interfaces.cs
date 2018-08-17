@@ -5,20 +5,24 @@ using System.Management.Automation;
 
 namespace Dynamic
 {
-     interface IDynamic
+    public interface IDynamic : IEquatable<IDynamic>
     {
-        string Name { get; }
-        Type ParameterType { get; }
+        string Name { get; set; }
+        Type ParameterType { get; set; }
         bool IsSet { get; }
         object Value { get; set; }
-        string[] ValidatedItems { get; }
-        string[] Aliases { get; }
-        bool AllowNull { get; set; }
-        bool AllowEmptyCollection { get; set; }
-        bool AllowEmptyString { get; set; }
-        bool ValidateNotNull { get; set; }
-        bool ValidateNotNullOrEmpty { get; set; }
+        string[] ValidatedItems { get; set; }
+        string[] Aliases { get; set; }
+        bool AllowNull { get; }
+        bool AllowEmptyCollection { get; }
+        bool AllowEmptyString { get; }
+        bool ValidateNotNull { get; }
+        bool ValidateNotNullOrEmpty { get; }
 
         void Clear();
+        void CommitAttributes();
+        void SetValidateCount(int minLength, int maxLength);
+        T Cast<T>(object o);
+        void SetParameterAttributes(IDictionary attributes);
     }
 }

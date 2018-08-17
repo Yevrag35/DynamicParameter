@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace Dynamic
 {
-    public class Parameter : RuntimeDefinedParameter, IDynamic, IEquatable<Parameter>
+    public abstract class Parameter : RuntimeDefinedParameter, IDynamic, IEquatable<Parameter>
     {
         #region Private Properties
         private IList<string> _aliases;
@@ -55,12 +55,11 @@ namespace Dynamic
             }
         }
 
-        public bool AllowNull { get; set; }
-
-        public bool AllowEmptyCollection { get; set; }
-        public bool AllowEmptyString { get; set; }
-        public bool ValidateNotNull { get; set; }
-        public bool ValidateNotNullOrEmpty { get; set; }
+        public abstract bool AllowNull { get; set; }
+        public abstract bool AllowEmptyCollection { get; set; }
+        public abstract bool AllowEmptyString { get; set; }
+        public abstract bool ValidateNotNull { get; set; }
+        public abstract bool ValidateNotNullOrEmpty { get; set; }
 
         #endregion
 
@@ -96,11 +95,6 @@ namespace Dynamic
             Aliases = null;
             ValidatedItems = null;
             Value = null;
-            AllowEmptyCollection = false;
-            AllowEmptyString = false;
-            AllowNull = false;
-            ValidateNotNull = false;
-            ValidateNotNullOrEmpty = false;
         }
 
         public void CommitAttributes()
@@ -109,25 +103,27 @@ namespace Dynamic
             {
                 throw new NullReferenceException("ValidatedItems cannot be null");
             }
-            else if (Attributes.Where(x => x.GetType() == typeof(ValidateSetAttribute)) == null)
+            else if (Attributes.Where(x => x.GetType() == typeof(ValidateSetAttribute)).ToArray().Length == 0)
             {
                 ValidateSetAttribute valSet = new ValidateSetAttribute(ValidatedItems.ToArray());
                 Attributes.Add(valSet);
             }
-            if (Aliases != null && Attributes.Where(x => x.GetType() == typeof(AliasAttribute)) == null)
+
+            if (Aliases != null && Attributes.Where(x => x.GetType() == typeof(AliasAttribute)).ToArray().Length == 0)
             {
                 AliasAttribute aliasAtt = new AliasAttribute(Aliases.ToArray());
                 Attributes.Add(aliasAtt);
             }
             PropertyInfo[] propInfo = GetType().GetProperties().Where(x => 
                 x.PropertyType == typeof(bool) && x.Name != "IsSet").ToArray();
+
             for (int i = 0; i < propInfo.Length; i++)
             {
                 PropertyInfo p = propInfo[i];
                 if (p.GetValue(this).Equals(true))
                 {
                     Type t = typeof(ParameterAttribute).Assembly.DefinedTypes.Single(x => x.Name == p.Name + "Attribute");
-                    if (Attributes.Where(x => x.GetType() == t).Count() == 0)
+                    if (Attributes.Where(x => x.GetType() == t).ToArray().Length == 0)
                     {
                         CmdletMetadataAttribute att = (CmdletMetadataAttribute)Activator.CreateInstance(t, new object[] { });
                         Attributes.Add(att);
@@ -142,7 +138,7 @@ namespace Dynamic
             Attributes.Add(valCount);
         }
 
-        public static T Cast<T>(object o)
+        public T Cast<T>(object o)
         {
             return (T)o;
         }
@@ -161,7 +157,7 @@ namespace Dynamic
                     if (pi.Name.Equals(key))
                     {
                         MethodInfo castMethod = GetType().GetMethod("Cast").MakeGenericMethod(pi.PropertyType);
-                        object castedObject = castMethod.Invoke(null, new object[] { attributes[key] });
+                        object castedObject = castMethod.Invoke(this, new object[] { attributes[key] });
                         pi.SetValue(pAtt, castedObject, null);
                     }
                 }
@@ -194,6 +190,11 @@ namespace Dynamic
             return base.GetHashCode();
         }
         public override string ToString() => GetType().FullName;
+
+        public bool Equals(IDynamic other)
+        {
+            return base.Equals(other);
+        }
 
         #endregion
     }

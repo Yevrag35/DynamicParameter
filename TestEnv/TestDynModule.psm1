@@ -8,17 +8,13 @@ Function Test-DynamicParameter()
 	)
 	DynamicParam
 	{
-		$allItems = Get-ChildItem -Path ".\..\..\GarveyFunctions" -Include * -Recurse
-		$global:list = New-Object 'System.Collections.Generic.List[System.IO.FileInfo]'
-		foreach ($item in $allItems)
-		{
-			$global:list.Add($item)
-		}
-		$names = $global:list.Name
-		$atts = @{ Mandatory = $true; Position = 0 }
-		$dynParam = New-Object Dynamic.DynamicParameter("File", $names, $atts, @("f", "fils"), $([array]), $true)
-		$lib = New-Object Dynamic.DynamicLibrary($dynParam)
-		return $lib.Generate()
+		$parameter = New-Object Dynamic.Testing.TestParameter
+		$atts = @{ Mandatory = $true; Position = 0; ValueFromPipeline = $true };
+		$parameter.SetParameterAttributes($atts);
+		$parameter.CommitAttributes();
+		$library = New-Object Dynamic.Library;
+		$library.AddParameter($parameter);
+		return $library;
 	}
 	Begin
 	{
