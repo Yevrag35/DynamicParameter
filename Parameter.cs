@@ -4,26 +4,63 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Management.Automation;
+using System.Management.Automation.Internal;
+using System.Reflection;
 
 namespace Dynamic
 {
-    public abstract class Parameter : RuntimeDefinedParameter, IDynParam, IEquatable<Parameter>
+    public class Parameter : RuntimeDefinedParameter, IDynamic, IEquatable<Parameter>
     {
         #region Private Properties
-        private IDictionary _atts;
-        private string[] _aliases;
+        private IList<string> _aliases;
         private IList<string> _valItems = new List<string>();
-        private Type _type;
 
         #endregion
 
         #region Fields
 
-        public IList<string> ValidatedItems => _valItems;
+        public string[] ValidatedItems
+        {
+            get
+            {
+                if (_valItems == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return _valItems.ToArray();
+                }
+            }
+            set => _valItems = value;
 
-        public string[] Aliases => _aliases;
+        }
 
-        public abstract bool AllowNull { get; }
+        public string[] Aliases
+        {
+            get
+            {
+                if (_aliases == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return _aliases.ToArray();
+                }
+            }
+            set
+            {
+                _aliases = value;
+            }
+        }
+
+        public bool AllowNull { get; set; }
+
+        public bool AllowEmptyCollection { get; set; }
+        public bool AllowEmptyString { get; set; }
+        public bool ValidateNotNull { get; set; }
+        public bool ValidateNotNullOrEmpty { get; set; }
 
         #endregion
 
@@ -31,6 +68,12 @@ namespace Dynamic
         public Parameter()
             : base()
         {
+        }
+        public Parameter(string name)
+            : base()
+        {
+            Name = name;
+            ParameterType = typeof(string);
         }
         public Parameter(string name, Type type)
             : base()
@@ -47,39 +90,83 @@ namespace Dynamic
 
         #region Methods
 
-        public void AddAliases(IList<string> aliases)
+        public void Clear()
         {
-            _aliases = aliases.ToArray();
+            Attributes.Clear();
+            Aliases = null;
+            ValidatedItems = null;
+            Value = null;
+            AllowEmptyCollection = false;
+            AllowEmptyString = false;
+            AllowNull = false;
+            ValidateNotNull = false;
+            ValidateNotNullOrEmpty = false;
         }
 
-        public void AddAttributes(IDictionary attributes)
+        public void CommitAttributes()
         {
-            _atts = attributes;
-        }
-
-        public void AddValidatedItem(IList<string> valItems)
-        {
-            for (int i = 0; i < valItems.Count; i++)
+            if (ValidatedItems == null)
             {
-                string s = valItems[i];
-                _valItems.Add(s);
+                throw new NullReferenceException("ValidatedItems cannot be null");
             }
-        }
-
-        public void RemoveValidatedItem(string[] items)
-        {
-            for (int i = _valItems.Count - 1; i >= 0; i--)
+            else if (Attributes.Where(x => x.GetType() == typeof(ValidateSetAttribute)) == null)
             {
-                string possible = _valItems[i];
-                for (int r = 0; r < items.Length; r++)
+                ValidateSetAttribute valSet = new ValidateSetAttribute(ValidatedItems.ToArray());
+                Attributes.Add(valSet);
+            }
+            if (Aliases != null && Attributes.Where(x => x.GetType() == typeof(AliasAttribute)) == null)
+            {
+                AliasAttribute aliasAtt = new AliasAttribute(Aliases.ToArray());
+                Attributes.Add(aliasAtt);
+            }
+            PropertyInfo[] propInfo = GetType().GetProperties().Where(x => 
+                x.PropertyType == typeof(bool) && x.Name != "IsSet").ToArray();
+            for (int i = 0; i < propInfo.Length; i++)
+            {
+                PropertyInfo p = propInfo[i];
+                if (p.GetValue(this).Equals(true))
                 {
-                    string s = items[r];
-                    if (s.Equals(possible))
+                    Type t = typeof(ParameterAttribute).Assembly.DefinedTypes.Single(x => x.Name == p.Name + "Attribute");
+                    if (Attributes.Where(x => x.GetType() == t).Count() == 0)
                     {
-                        _valItems.Remove(possible);
+                        CmdletMetadataAttribute att = (CmdletMetadataAttribute)Activator.CreateInstance(t, new object[] { });
+                        Attributes.Add(att);
                     }
                 }
             }
+        }
+
+        public void SetValidateCount(int minLength, int maxLength)
+        {
+            ValidateCountAttribute valCount = new ValidateCountAttribute(minLength, maxLength);
+            Attributes.Add(valCount);
+        }
+
+        public static T Cast<T>(object o)
+        {
+            return (T)o;
+        }
+
+        public void SetParameterAttributes(IDictionary attributes)
+        {
+            string[] keys = attributes.Keys.Cast<string>().ToArray();
+            ParameterAttribute pAtt = new ParameterAttribute();
+            PropertyInfo[] info = typeof(ParameterAttribute).GetProperties();
+            for (int i = 0; i < info.Length; i++)
+            {
+                PropertyInfo pi = info[i];
+                for (int t = 0; t < attributes.Keys.Count; t++)
+                {
+                    string key = keys[t];
+                    if (pi.Name.Equals(key))
+                    {
+                        MethodInfo castMethod = GetType().GetMethod("Cast").MakeGenericMethod(pi.PropertyType);
+                        object castedObject = castMethod.Invoke(null, new object[] { attributes[key] });
+                        pi.SetValue(pAtt, castedObject, null);
+                    }
+                }
+            }
+            Attributes.Add(pAtt);
         }
 
         #endregion
@@ -106,7 +193,7 @@ namespace Dynamic
         {
             return base.GetHashCode();
         }
-        public abstract override string ToString();
+        public override string ToString() => GetType().FullName;
 
         #endregion
     }

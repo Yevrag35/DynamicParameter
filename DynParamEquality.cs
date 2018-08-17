@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Dynamic
 {
-    public class DynParamEquality : EqualityComparer<Parameter>
+    internal class DynParamEquality : EqualityComparer<Parameter>
     {
         public override bool Equals(Parameter x, Parameter y)
         {
-            if (x.Name == y.Name && x.Type.Equals(y.Type))
+            if (x.Name == y.Name && x.ParameterType.Equals(y.ParameterType))
             {
                 return true;
             }

@@ -5,20 +5,20 @@ using System.Management.Automation;
 
 namespace Dynamic
 {
-    public interface IDynParam
+     interface IDynamic
     {
         string Name { get; }
         Type ParameterType { get; }
-        IList<string> ValidatedItems { get; }
+        bool IsSet { get; }
+        object Value { get; set; }
+        string[] ValidatedItems { get; }
         string[] Aliases { get; }
-        bool AllowNull { get; }
+        bool AllowNull { get; set; }
+        bool AllowEmptyCollection { get; set; }
+        bool AllowEmptyString { get; set; }
+        bool ValidateNotNull { get; set; }
+        bool ValidateNotNullOrEmpty { get; set; }
 
-        void AddAttributes(IDictionary attributes);
-
-        void AddValidatedItem(IList<string> valItems);
-
-        void RemoveValidatedItem(string[] remItems);
-
-        void AddAliases(IList<string> aliases);
+        void Clear();
     }
 }
