@@ -21,38 +21,14 @@ namespace Dynamic
 
         public string[] ValidatedItems
         {
-            get
-            {
-                if (_valItems == null)
-                {
-                    return null;
-                }
-                else
-                {
-                    return _valItems.ToArray();
-                }
-            }
+            get => _valItems == null ? null : _valItems.ToArray();
             set => _valItems = value;
-
         }
 
         public string[] Aliases
         {
-            get
-            {
-                if (_aliases == null)
-                {
-                    return null;
-                }
-                else
-                {
-                    return _aliases.ToArray();
-                }
-            }
-            set
-            {
-                _aliases = value;
-            }
+            get => _aliases == null ? null : _aliases.ToArray();
+            set => _aliases = value;
         }
 
         public abstract bool AllowNull { get; set; }
