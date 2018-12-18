@@ -81,13 +81,13 @@ namespace Dynamic
             }
             else if (Attributes.Where(x => x.GetType() == typeof(ValidateSetAttribute)).ToArray().Length == 0)
             {
-                ValidateSetAttribute valSet = new ValidateSetAttribute(ValidatedItems.ToArray());
+                var valSet = new ValidateSetAttribute(ValidatedItems.ToArray());
                 Attributes.Add(valSet);
             }
 
             if (Aliases != null && Attributes.Where(x => x.GetType() == typeof(AliasAttribute)).ToArray().Length == 0)
             {
-                AliasAttribute aliasAtt = new AliasAttribute(Aliases.ToArray());
+                var aliasAtt = new AliasAttribute(Aliases.ToArray());
                 Attributes.Add(aliasAtt);
             }
             PropertyInfo[] propInfo = GetType().GetProperties().Where(x => 
@@ -101,7 +101,7 @@ namespace Dynamic
                     Type t = typeof(ParameterAttribute).Assembly.DefinedTypes.Single(x => x.Name == p.Name + "Attribute");
                     if (Attributes.Where(x => x.GetType() == t).ToArray().Length == 0)
                     {
-                        CmdletMetadataAttribute att = (CmdletMetadataAttribute)Activator.CreateInstance(t, new object[] { });
+                        var att = (CmdletMetadataAttribute)Activator.CreateInstance(t, new object[] { });
                         Attributes.Add(att);
                     }
                 }
@@ -110,19 +110,16 @@ namespace Dynamic
 
         public void SetValidateCount(int minLength, int maxLength)
         {
-            ValidateCountAttribute valCount = new ValidateCountAttribute(minLength, maxLength);
+            var valCount = new ValidateCountAttribute(minLength, maxLength);
             Attributes.Add(valCount);
         }
 
-        public T Cast<T>(object o)
-        {
-            return (T)o;
-        }
+        internal protected T Cast<T>(dynamic o) => (T)o;
 
         public void SetParameterAttributes(IDictionary attributes)
         {
             string[] keys = attributes.Keys.Cast<string>().ToArray();
-            ParameterAttribute pAtt = new ParameterAttribute();
+            var pAtt = new ParameterAttribute();
             PropertyInfo[] info = typeof(ParameterAttribute).GetProperties();
             for (int i = 0; i < info.Length; i++)
             {
@@ -146,15 +143,8 @@ namespace Dynamic
         #region IEquatable Overrides
         public bool Equals(Parameter param)
         {
-            DynParamEquality peq = new DynParamEquality();
-            if (peq.Equals(this, param))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            var peq = new DynParamEquality();
+            return peq.Equals(this, param) ? true : false;
         }
 
         public override bool Equals(object obj)

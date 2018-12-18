@@ -22,7 +22,6 @@ namespace Dynamic
         void Clear();
         void CommitAttributes();
         void SetValidateCount(int minLength, int maxLength);
-        T Cast<T>(object o);
         void SetParameterAttributes(IDictionary attributes);
     }
 }
