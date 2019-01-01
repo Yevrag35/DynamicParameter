@@ -7,9 +7,9 @@ using System.Management.Automation;
 using System.Management.Automation.Internal;
 using System.Reflection;
 
-namespace Dynamic
+namespace MG.Dynamic
 {
-    public abstract class Parameter : RuntimeDefinedParameter, IDynamic, IEquatable<Parameter>
+    public abstract class Parameter : RuntimeDefinedParameter, IDynamic
     {
         #region Private Properties
         private IList<string> _aliases;
@@ -136,30 +136,6 @@ namespace Dynamic
                 }
             }
             Attributes.Add(pAtt);
-        }
-
-        #endregion
-
-        #region IEquatable Overrides
-        public bool Equals(Parameter param)
-        {
-            var peq = new DynParamEquality();
-            return peq.Equals(this, param) ? true : false;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return base.Equals(obj);
-        }
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-        public override string ToString() => GetType().FullName;
-
-        public bool Equals(IDynamic other)
-        {
-            return base.Equals(other);
         }
 
         #endregion

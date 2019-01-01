@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Management.Automation;
 
-namespace Dynamic
+namespace MG.Dynamic
 {
-    public interface IDynamic : IEquatable<IDynamic>
+    public interface IDynamic
     {
         string Name { get; set; }
         Type ParameterType { get; set; }

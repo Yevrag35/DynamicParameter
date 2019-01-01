@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Management.Automation;
 
-namespace Dynamic
+namespace MG.Dynamic
 {
-    public class Library : RuntimeDefinedParameterDictionary
+    public class ParameterLibrary : RuntimeDefinedParameterDictionary
     {
-        public Library() { }
+        public ParameterLibrary() { }
 
         public void AddParameter(Parameter p)
         {
