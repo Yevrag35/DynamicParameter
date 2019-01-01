@@ -11,8 +11,8 @@ namespace MG.Dynamic
         Type ParameterType { get; set; }
         bool IsSet { get; }
         object Value { get; set; }
-        string[] ValidatedItems { get; set; }
-        string[] Aliases { get; set; }
+        IList<string> ValidatedItems { get; }
+        IList<string> Aliases { get; }
         bool AllowNull { get; }
         bool AllowEmptyCollection { get; }
         bool AllowEmptyString { get; }
@@ -20,7 +20,6 @@ namespace MG.Dynamic
         bool ValidateNotNullOrEmpty { get; }
 
         void Clear();
-        void CommitAttributes();
         void SetValidateCount(int minLength, int maxLength);
         void SetParameterAttributes(IDictionary attributes);
     }

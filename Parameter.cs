@@ -11,25 +11,10 @@ namespace MG.Dynamic
 {
     public abstract class Parameter : RuntimeDefinedParameter, IDynamic
     {
-        #region Private Properties
-        private IList<string> _aliases;
-        private IList<string> _valItems = new List<string>();
+        #region Fields/Properties
 
-        #endregion
-
-        #region Fields
-
-        public string[] ValidatedItems
-        {
-            get => _valItems == null ? null : _valItems.ToArray();
-            set => _valItems = value;
-        }
-
-        public string[] Aliases
-        {
-            get => _aliases == null ? null : _aliases.ToArray();
-            set => _aliases = value;
-        }
+        public abstract IList<string> ValidatedItems { get; internal set; }
+        public abstract IList<string> Aliases { get; internal set; }
 
         public abstract bool AllowNull { get; set; }
         public abstract bool AllowEmptyCollection { get; set; }
@@ -40,15 +25,12 @@ namespace MG.Dynamic
         #endregion
 
         #region Constructors
-        public Parameter()
-            : base()
-        {
-        }
+        public Parameter() : base() { }
         public Parameter(string name)
             : base()
         {
-            Name = name;
-            ParameterType = typeof(string);
+            base.Name = name;
+            base.ParameterType = typeof(string);
         }
         public Parameter(string name, Type type)
             : base()
@@ -57,9 +39,7 @@ namespace MG.Dynamic
             base.ParameterType = type;
         }
         public Parameter(string name, Type type, Collection<Attribute> attributes)
-            : base(name, type, attributes)
-        {
-        }
+            : base(name, type, attributes) { }
 
         #endregion
 
@@ -67,30 +47,29 @@ namespace MG.Dynamic
 
         public void Clear()
         {
-            Attributes.Clear();
-            Aliases = null;
-            ValidatedItems = null;
-            Value = null;
+            base.Attributes.Clear();
+            this.Aliases = null;
+            this.ValidatedItems = null;
+            base.Value = null;
         }
 
         public void CommitAttributes()
         {
-            if (ValidatedItems == null)
-            {
+            if (this.ValidatedItems == null)
                 throw new NullReferenceException("ValidatedItems cannot be null");
-            }
-            else if (Attributes.Where(x => x.GetType() == typeof(ValidateSetAttribute)).ToArray().Length == 0)
+            
+            else if (base.Attributes.Where(x => x.GetType() == typeof(ValidateSetAttribute)).ToArray().Length == 0)
             {
                 var valSet = new ValidateSetAttribute(ValidatedItems.ToArray());
-                Attributes.Add(valSet);
+                base.Attributes.Add(valSet);
             }
 
-            if (Aliases != null && Attributes.Where(x => x.GetType() == typeof(AliasAttribute)).ToArray().Length == 0)
+            if (this.Aliases != null && base.Attributes.Where(x => x.GetType() == typeof(AliasAttribute)).ToArray().Length == 0)
             {
-                var aliasAtt = new AliasAttribute(Aliases.ToArray());
-                Attributes.Add(aliasAtt);
+                var aliasAtt = new AliasAttribute(this.Aliases.ToArray());
+                base.Attributes.Add(aliasAtt);
             }
-            PropertyInfo[] propInfo = GetType().GetProperties().Where(x => 
+            PropertyInfo[] propInfo = this.GetType().GetProperties().Where(x => 
                 x.PropertyType == typeof(bool) && x.Name != "IsSet").ToArray();
 
             for (int i = 0; i < propInfo.Length; i++)
@@ -99,10 +78,10 @@ namespace MG.Dynamic
                 if (p.GetValue(this).Equals(true))
                 {
                     Type t = typeof(ParameterAttribute).Assembly.DefinedTypes.Single(x => x.Name == p.Name + "Attribute");
-                    if (Attributes.Where(x => x.GetType() == t).ToArray().Length == 0)
+                    if (base.Attributes.Where(x => x.GetType() == t).ToArray().Length == 0)
                     {
-                        var att = (CmdletMetadataAttribute)Activator.CreateInstance(t, new object[] { });
-                        Attributes.Add(att);
+                        var att = (CmdletMetadataAttribute)Activator.CreateInstance(t, new object[0] { });
+                        base.Attributes.Add(att);
                     }
                 }
             }
@@ -111,10 +90,10 @@ namespace MG.Dynamic
         public void SetValidateCount(int minLength, int maxLength)
         {
             var valCount = new ValidateCountAttribute(minLength, maxLength);
-            Attributes.Add(valCount);
+            base.Attributes.Add(valCount);
         }
 
-        internal protected T Cast<T>(dynamic o) => (T)o;
+        protected internal T Cast<T>(dynamic o) => (T)o;
 
         public void SetParameterAttributes(IDictionary attributes)
         {
@@ -129,14 +108,16 @@ namespace MG.Dynamic
                     string key = keys[t];
                     if (pi.Name.Equals(key))
                     {
-                        MethodInfo castMethod = GetType().GetMethod("Cast").MakeGenericMethod(pi.PropertyType);
+                        MethodInfo castMethod = this.GetType().GetMethod("Cast").MakeGenericMethod(pi.PropertyType);
                         object castedObject = castMethod.Invoke(this, new object[] { attributes[key] });
                         pi.SetValue(pAtt, castedObject, null);
                     }
                 }
             }
-            Attributes.Add(pAtt);
+            base.Attributes.Add(pAtt);
         }
+
+
 
         #endregion
     }

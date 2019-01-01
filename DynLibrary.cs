@@ -1,25 +1,51 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Management.Automation;
 
 namespace MG.Dynamic
 {
     public class ParameterLibrary : RuntimeDefinedParameterDictionary
     {
-        public ParameterLibrary() { }
+        public ParameterLibrary() : base() { }
 
-        public void AddParameter(Parameter p)
+        public ParameterLibrary(IEnumerable<Parameter> ps)
+            : base() => this.Add(ps);
+
+        public void Add(Parameter p)
         {
-            if (!ContainsValue(p))
+            if (!base.ContainsValue(p))
+                base.Add(p.Name, p);
+            
+        }
+        public void Add(IEnumerable<Parameter> ps)
+        {
+            var pArr = ps.ToArray();
+            for (int i = 0; i < pArr.Length; i++)
             {
-                Add(p.Name, p);
+                var p = pArr[i];
+                this.Add(p);
             }
         }
+
         public void RemoveParameter(Parameter p)
         {
-            if (ContainsValue(p))
-            {
-                Remove(p.Name);
-            }
+            if (base.ContainsValue(p))
+                base.Remove(p.Name);
+        }
+
+        public object GetDefinedValue(string pName)
+        {
+            if (base.ContainsKey(pName))
+                return this[pName].Value;
+            
+            else
+                throw new ArgumentException("The key '" + pName + "' is not present in this library!");
+        }
+        public T GetDefinedValue<T>(string pName)
+        {
+            dynamic val = this.GetDefinedValue(pName);
+            return (T)val;
         }
     }
 }
