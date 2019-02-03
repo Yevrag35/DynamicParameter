@@ -9,115 +9,203 @@ using System.Reflection;
 
 namespace MG.Dynamic
 {
-    public abstract class Parameter : RuntimeDefinedParameter, IDynamic
+    public class ParameterDefiner : IDynamicDefiner
     {
         #region Fields/Properties
+        private bool _mand = false;
+        private bool _an = false;
+        private bool _aec = false;
+        private bool _aes = false;
+        private bool _vc = false;
+        private bool _vnn = false;
+        private bool _vnnoe = false;
+        private List<string> _il;
+        private List<string> _als;
+        private Collection<Attribute> attCol;
 
-        public abstract IList<string> ValidatedItems { get; internal set; }
-        public abstract IList<string> Aliases { get; internal set; }
+        private static readonly string[] ParameterAttributeNames = new string[5]
+        {
+            "Mandatory", "Position", "HelpMessage", "ValueFromPipeline", "ValueFromPipelineByPropertyName"
+        };
+        private static readonly string[] AllowAndValidates = new string[5]
+        {
+            "AllowNull", "AllowEmptyCollection", "AllowEmptyString", "ValidateNotNull", "ValidateNotNullOrEmpty"
+        };
 
-        public abstract bool AllowNull { get; set; }
-        public abstract bool AllowEmptyCollection { get; set; }
-        public abstract bool AllowEmptyString { get; set; }
-        public abstract bool ValidateNotNull { get; set; }
-        public abstract bool ValidateNotNullOrEmpty { get; set; }
+        public string Name { get; }
+        public Type ParameterType { get; }
+        public int? Position { get; set; }
+        public bool Mandatory
+        {
+            get => _mand;
+            set => _mand = value;
+        }
+
+
+        List<string> IDynamicDefiner.ValidatedItems => _il;
+
+        List<string> IDynamicDefiner.Aliases => _als;
+
+        bool IDynamicDefiner.AllowNull
+        {
+            get => _an;
+            set => _an = value;
+        }
+
+        bool IDynamicDefiner.AllowEmptyCollection
+        {
+            get => _aec;
+            set => _aec = value;
+        }
+
+        bool IDynamicDefiner.AllowEmptyString
+        {
+            get => _aes;
+            set => _aes = value;
+        }
+
+        KeyValuePair<int, int>? IDynamicDefiner.ValidateCount { get; set; }
+
+        bool IDynamicDefiner.ValidateNotNull
+        {
+            get => _vnn;
+            set => _vnn = value;
+        }
+
+        bool IDynamicDefiner.ValidateNotNullOrEmpty
+        {
+            get => _vnnoe;
+            set => _vnnoe = value;
+        }
 
         #endregion
 
-        #region Constructors
-        public Parameter() : base() { }
-        public Parameter(string name)
-            : base()
+        #region CONSTRUCTORS
+
+        public ParameterDefiner(string name, Type pType)
         {
-            base.Name = name;
-            base.ParameterType = typeof(string);
+            this.Name = name;
+            this.ParameterType = pType;
+            _il = new List<string>();
+            _als = new List<string>();
         }
-        public Parameter(string name, Type type)
-            : base()
-        {
-            base.Name = name;
-            base.ParameterType = type;
-        }
-        public Parameter(string name, Type type, Collection<Attribute> attributes)
-            : base(name, type, attributes) { }
 
         #endregion
 
-        #region Methods
+        #region METHODS
 
-        public void Clear()
+        void IDynamicDefiner.Clear()
         {
-            base.Attributes.Clear();
-            this.Aliases = null;
-            this.ValidatedItems = null;
-            base.Value = null;
+            _als.Clear();
+            _il.Clear();
+            ((IDynamicDefiner)this).AllowEmptyCollection = false;
+            ((IDynamicDefiner)this).AllowEmptyString = false;
+            ((IDynamicDefiner)this).AllowNull = false;
+            ((IDynamicDefiner)this).ValidateCount = null;
+            ((IDynamicDefiner)this).ValidateNotNull = false;
+            ((IDynamicDefiner)this).ValidateNotNullOrEmpty = false;
+            attCol.Clear();
         }
 
-        public void CommitAttributes()
+        private T Cast<T>(dynamic o) => (T)o;
+
+        private const string CAST = "Cast";
+
+        ParameterAttribute IDynamicDefiner.SetParameterAttribute()
         {
-            if (this.ValidatedItems == null)
-                throw new NullReferenceException("ValidatedItems cannot be null");
+            PropertyInfo[] theseProps = typeof(IDynamicDefiner).GetProperties().Where(
+                x => ParameterAttributeNames.Contains(x.Name)).ToArray();
             
-            else if (base.Attributes.Where(x => x.GetType() == typeof(ValidateSetAttribute)).ToArray().Length == 0)
-            {
-                var valSet = new ValidateSetAttribute(ValidatedItems.ToArray());
-                base.Attributes.Add(valSet);
-            }
-
-            if (this.Aliases != null && base.Attributes.Where(x => x.GetType() == typeof(AliasAttribute)).ToArray().Length == 0)
-            {
-                var aliasAtt = new AliasAttribute(this.Aliases.ToArray());
-                base.Attributes.Add(aliasAtt);
-            }
-            PropertyInfo[] propInfo = this.GetType().GetProperties().Where(x => 
-                x.PropertyType == typeof(bool) && x.Name != "IsSet").ToArray();
-
-            for (int i = 0; i < propInfo.Length; i++)
-            {
-                PropertyInfo p = propInfo[i];
-                if (p.GetValue(this).Equals(true))
-                {
-                    Type t = typeof(ParameterAttribute).Assembly.DefinedTypes.Single(x => x.Name == p.Name + "Attribute");
-                    if (base.Attributes.Where(x => x.GetType() == t).ToArray().Length == 0)
-                    {
-                        var att = (CmdletMetadataAttribute)Activator.CreateInstance(t, new object[0] { });
-                        base.Attributes.Add(att);
-                    }
-                }
-            }
-        }
-
-        public void SetValidateCount(int minLength, int maxLength)
-        {
-            var valCount = new ValidateCountAttribute(minLength, maxLength);
-            base.Attributes.Add(valCount);
-        }
-
-        protected internal T Cast<T>(dynamic o) => (T)o;
-
-        public void SetParameterAttributes(IDictionary attributes)
-        {
-            string[] keys = attributes.Keys.Cast<string>().ToArray();
             var pAtt = new ParameterAttribute();
             PropertyInfo[] info = typeof(ParameterAttribute).GetProperties();
             for (int i = 0; i < info.Length; i++)
             {
                 PropertyInfo pi = info[i];
-                for (int t = 0; t < attributes.Keys.Count; t++)
+                for (int t = 0; t < theseProps.Length; t++)
                 {
-                    string key = keys[t];
-                    if (pi.Name.Equals(key))
+                    PropertyInfo key = theseProps[t];
+                    if (pi.Name.Equals(key.Name))
                     {
-                        MethodInfo castMethod = this.GetType().GetMethod("Cast").MakeGenericMethod(pi.PropertyType);
-                        object castedObject = castMethod.Invoke(this, new object[] { attributes[key] });
-                        pi.SetValue(pAtt, castedObject, null);
+                        MethodInfo castMethod = this.GetType().GetMethod(
+                            CAST, BindingFlags.Instance | BindingFlags.NonPublic).MakeGenericMethod(pi.PropertyType);
+                        object keyValue = key.GetValue(this);
+                        if (keyValue != null)
+                        {
+                            object castedObject = castMethod.Invoke(this, new object[] { keyValue });
+                            pi.SetValue(pAtt, castedObject, null);
+                        }
                     }
                 }
             }
-            base.Attributes.Add(pAtt);
+            return pAtt;
         }
 
+        private void AddTheRest()
+        {
+            PropertyInfo[] theseProps = typeof(IDynamicDefiner).GetProperties().Where(
+                x => AllowAndValidates.Contains(x.Name)).ToArray();
+            for (int i = 0; i < theseProps.Length; i++)
+            {
+                var prop = theseProps[i];
+                if ((bool)prop.GetValue(this))
+                {
+                    var objHandle = Activator.CreateInstance(
+                        "System.Management.Automation", "System.Management.Automation." + prop.Name + "Attribute");
+                    var newAtt = (Attribute)objHandle.Unwrap();
+                    attCol.Add(newAtt);
+                }
+            }
+        }
 
+        public static explicit operator RuntimeDefinedParameter(ParameterDefiner pd) =>
+            ((IDynamicDefiner)pd).NewParameter();
+
+        public static explicit operator RuntimeDefinedParameterDictionary(ParameterDefiner pd) =>
+            ((IDynamicDefiner)pd).NewDictionary();
+
+        RuntimeDefinedParameter IDynamicDefiner.NewParameter()
+        {
+            attCol = new Collection<Attribute>
+            {
+                ((IDynamicDefiner)this).SetParameterAttribute()
+            };
+            if (((IDynamicDefiner)this).ValidateCount.HasValue)
+            {
+                attCol.Add(new ValidateCountAttribute(
+                    ((IDynamicDefiner)this).ValidateCount.Value.Key,
+                    ((IDynamicDefiner)this).ValidateCount.Value.Value
+                ));
+            }
+            this.AddTheRest();
+            if (_il.Count > 0)
+            {
+                attCol.Add(new ValidateSetAttribute(_il.ToArray()));
+            }
+            if (_als.Count > 0)
+            {
+                attCol.Add(new AliasAttribute(_als.ToArray()));
+            }
+            return new RuntimeDefinedParameter(this.Name, this.ParameterType, attCol);
+        }
+
+        RuntimeDefinedParameterDictionary IDynamicDefiner.NewDictionary()
+        {
+            return new RuntimeDefinedParameterDictionary
+            {
+                { this.Name, ((IDynamicDefiner)this).NewParameter() }
+            };
+        }
+
+        RuntimeDefinedParameterDictionary IDynamicDefiner.NewDictionary(RuntimeDefinedParameter[] parameters)
+        {
+            var dict = new RuntimeDefinedParameterDictionary();
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                RuntimeDefinedParameter p = parameters[i];
+                dict.Add(p.Name, p);
+            }
+            return dict;
+        }
 
         #endregion
     }

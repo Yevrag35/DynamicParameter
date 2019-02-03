@@ -1,40 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Management.Automation;
 
-namespace Dynamic.Testing
+namespace MG.Dynamic.Testing
 {
-    public class TestParameter : Parameter
+    [Cmdlet(VerbsDiagnostic.Test, "Command")]
+    public class TestCommand : PSCmdlet, IDynamicParameters
     {
-        private protected const string pName = "Files";
-        private static protected Type pType = typeof(string[]);
+        private const string pName = "FileName";
 
-        private bool _test;
-        public override bool AllowNull
-        {
-            get => _test;
-            set => _test = value;
-        }
-        public override bool AllowEmptyCollection { get; set; }
-        public override bool AllowEmptyString { get; set; }
-        public override bool ValidateNotNull { get; set; }
-        public override bool ValidateNotNullOrEmpty { get; set; }
+        [Parameter(Mandatory = false)]
+        public string TestString { get; set; }
 
-        public TestParameter()
-            : base(pName, pType)
+        private IDynamicDefiner _dyn;
+        private RuntimeDefinedParameterDictionary dict;
+
+        public object GetDynamicParameters()
         {
-            _test = true;
-            ValidatedItems = new string[5]
+            if (dict == null)
             {
-                "Hi",
-                "Hey",
-                "Yo",
-                "Whatup?",
-                "Wazzzzzzup"
-            };
-            Aliases = new string[1] { "f" };
-            CommitAttributes();
+                if (_dyn == null)
+                {
+                    _dyn = new ParameterDefiner(pName, typeof(string[]))
+                    {
+                        Mandatory = true,
+                        Position = 0
+                    };
+                    _dyn.Aliases.AddRange(new string[2] { "f", "file" });
+                    _dyn.AllowEmptyString = true;
+
+                    string curDir = Environment.CurrentDirectory;
+                    string[] allFiles = Directory.GetFiles(curDir);
+                    _dyn.ValidatedItems.AddRange(allFiles);
+                }
+                dict = _dyn.NewDictionary();
+            }
+            return dict;
+        }
+
+        protected override void BeginProcessing() => base.BeginProcessing();
+
+        protected override void ProcessRecord()
+        {
+            string[] chosen = dict[pName].Value as string[];
+            Console.WriteLine(chosen);
         }
     }
 }

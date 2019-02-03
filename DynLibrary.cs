@@ -9,16 +9,16 @@ namespace MG.Dynamic
     {
         public ParameterLibrary() : base() { }
 
-        public ParameterLibrary(IEnumerable<Parameter> ps)
+        public ParameterLibrary(IEnumerable<ParameterDefiner> ps)
             : base() => this.Add(ps);
 
-        public void Add(Parameter p)
+        public void Add(ParameterDefiner p)
         {
             if (!base.ContainsValue(p))
                 base.Add(p.Name, p);
             
         }
-        public void Add(IEnumerable<Parameter> ps)
+        public void Add(IEnumerable<ParameterDefiner> ps)
         {
             var pArr = ps.ToArray();
             for (int i = 0; i < pArr.Length; i++)
@@ -28,7 +28,7 @@ namespace MG.Dynamic
             }
         }
 
-        public void RemoveParameter(Parameter p)
+        public void RemoveParameter(ParameterDefiner p)
         {
             if (base.ContainsValue(p))
                 base.Remove(p.Name);

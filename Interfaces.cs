@@ -1,26 +1,31 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Management.Automation;
 
 namespace MG.Dynamic
 {
-    public interface IDynamic
+    public interface IDynamicDefiner
     {
-        string Name { get; set; }
-        Type ParameterType { get; set; }
-        bool IsSet { get; }
-        object Value { get; set; }
-        IList<string> ValidatedItems { get; }
-        IList<string> Aliases { get; }
-        bool AllowNull { get; }
-        bool AllowEmptyCollection { get; }
-        bool AllowEmptyString { get; }
-        bool ValidateNotNull { get; }
-        bool ValidateNotNullOrEmpty { get; }
+        string Name { get; }
+        Type ParameterType { get; }
+        bool Mandatory { get; set; }
+        int? Position { get; set; }
+        List<string> ValidatedItems { get; }
+        List<string> Aliases { get; }
+        bool AllowNull { get; set; }
+        bool AllowEmptyCollection { get; set; }
+        bool AllowEmptyString { get; set; }
+        KeyValuePair<int, int>? ValidateCount { get; set; }
+        bool ValidateNotNull { get; set; }
+        bool ValidateNotNullOrEmpty { get; set; }
 
         void Clear();
-        void SetValidateCount(int minLength, int maxLength);
-        void SetParameterAttributes(IDictionary attributes);
+        ParameterAttribute SetParameterAttribute();
+
+        RuntimeDefinedParameter NewParameter();
+        RuntimeDefinedParameterDictionary NewDictionary();
+        RuntimeDefinedParameterDictionary NewDictionary(RuntimeDefinedParameter[] parameters);
     }
 }

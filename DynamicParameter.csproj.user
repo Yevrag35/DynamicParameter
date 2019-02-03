@@ -3,7 +3,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <StartAction>Program</StartAction>
     <StartProgram>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</StartProgram>
-    <StartArguments>-NoExit -Command "Import-Module .\TestDynModule.psd1%3b"</StartArguments>
-    <StartWorkingDirectory>..\TestEnv\</StartWorkingDirectory>
+    <StartArguments>-NoExit -Command "Import-Module .\MG.Dynamic.dll%3b"</StartArguments>
+    <StartWorkingDirectory>
+    </StartWorkingDirectory>
   </PropertyGroup>
 </Project>
