@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MG.Dynamic</RootNamespace>
     <AssemblyName>MG.Dynamic</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -43,11 +43,18 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="DynLibrary.cs" />
-    <Compile Include="Parameter.cs" />
-    <Compile Include="Interfaces.cs" />
+    <Content Include="Debug.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="DynLibrary.cs.old" />
+    <None Include="Parameter.cs" />
+    <None Include="Interfaces.cs" />
+    <Compile Include="DynamicLibrary.cs" />
+    <Compile Include="DynamicParameter.cs" />
+    <None Include="IDynParam-Generic.cs" />
+    <Compile Include="IDynParam.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestEnv\TestClass.cs" />
+    <None Include="TestEnv\TestClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Assemblies\" />
