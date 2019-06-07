@@ -39,5 +39,6 @@ namespace MG.Dynamic
 
         RuntimeDefinedParameter AsRuntimeParameter();
         object GetItemFromChosenValue(object chosenValue);
+        IEnumerable<object> GetItemsFromChosenValues(object[] chosenValues);
     }
 }

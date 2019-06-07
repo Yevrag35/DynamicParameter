@@ -25,8 +25,25 @@ namespace MG.Dynamic
 
             _dynParams.Add(dynamicParameter);
         }
+        public void AddRange(IEnumerable<IDynParam> parameters)
+        {
+            foreach (IDynParam idyn in parameters)
+            {
+                this.Add(idyn);
+            }
+        }
+
 
         private T Cast<T>(dynamic o) => (T)o;
+        private IEnumerable<T> Cast<T>(IEnumerable ienum)
+        {
+            var tList = new List<T>();
+            foreach (dynamic o in ienum)
+            {
+                tList.Add(this.Cast<T>(o));
+            }
+            return tList;
+        }
 
         public object GetParameterValue(string parameterName)
         {
@@ -36,6 +53,15 @@ namespace MG.Dynamic
                 val = base[parameterName].Value;
             }
             return val;
+        }
+        public object[] GetParameterValues(string parameterName)
+        {
+            object[] vals = null;
+            if (this.ParameterHasValue(parameterName))
+            {
+                vals = base[parameterName].Value as object[];
+            }
+            return vals;
         }
 
         public T GetParameterValue<T>(string parameterName)
@@ -50,6 +76,21 @@ namespace MG.Dynamic
             }
             return tVal;
         }
+        public T[] GetParameterValues<T>(string parameterName)
+        {
+            T[] tArr = null;
+            if (this.ParameterHasValue(parameterName))
+            {
+                object[] objArr = this.GetParameterValues(parameterName);
+                tArr = new T[objArr.Length];
+                for (int i = 0; i < objArr.Length; i++)
+                {
+                    if (objArr[i] is T tObj)
+                        tArr[i] = tObj;
+                }
+            }
+            return tArr;
+        }
 
         public object GetUnderlyingValue(string parameterName)
         {
@@ -62,6 +103,18 @@ namespace MG.Dynamic
             }
             return retVal;
         }
+        public IEnumerable<object> GetUnderlyingValues(string parameterName)
+        {
+            var list = new List<object>();
+            if (_dynParams.Count > 0)
+            {
+                object[] oVals = this.GetParameterValues(parameterName);
+                list.AddRange(_dynParams.Single(
+                    x => x.Name.Equals(parameterName)).GetItemsFromChosenValues(oVals));
+            }
+            return list;
+        }
+
         public T GetUnderlyingValue<T>(string parameterName)
         {
             T tVal = default;
@@ -71,6 +124,19 @@ namespace MG.Dynamic
                 tVal = this.Cast<T>(underVal);
             
             return tVal;
+        }
+
+        public IEnumerable<T> GetUnderlyingValues<T>(string parameterName)
+        {
+            IEnumerable<object> underVals = this.GetUnderlyingValues(parameterName);
+
+            if (underVals != null)
+            {
+                IEnumerable<T> tArr = this.Cast<T>(underVals);
+                return tArr;
+            }
+            else
+                return null;
         }
 
         public bool ParameterHasValue(string parameterName)

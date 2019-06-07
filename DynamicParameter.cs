@@ -188,6 +188,30 @@ namespace MG.Dynamic
             }
             return outVal;
         }
+        IEnumerable<object> IDynParam.GetItemsFromChosenValues(object[] chosenValues)
+        {
+            var outTs = new List<object>(chosenValues.Length);
+            if (!string.IsNullOrEmpty(_mappedProperty))
+            {
+                PropertyInfo pi = typeof(T).GetProperty(_mappedProperty, PUB_INST);
+                if (pi != null)
+                {
+                    for (int i =  0; i < _backingItems.Count; i++)
+                    {
+                        T bi = _backingItems[i];
+                        
+                        for (int i2 = 0; i2 < chosenValues.Length; i2++)
+                        {
+                            if (pi.GetValue(bi).Equals(chosenValues[i2]))
+                            {
+                                outTs.Add(bi);
+                            }
+                        }
+                    }
+                }
+            }
+            return outTs;
+        }
 
         public T GetItemFromChosenValue(object chosenValue)
         {
