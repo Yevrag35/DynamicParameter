@@ -33,7 +33,6 @@ namespace MG.Dynamic
             }
         }
 
-
         private T Cast<T>(dynamic o) => (T)o;
         private IEnumerable<T> Cast<T>(IEnumerable ienum)
         {
@@ -137,6 +136,17 @@ namespace MG.Dynamic
             }
             else
                 return null;
+        }
+
+        public bool ParameterIsValidateSet(string parameterName)
+        {
+            bool result = false;
+            if (base.ContainsKey(parameterName))
+            {
+                RuntimeDefinedParameter rtParam = base[parameterName];
+                result = rtParam.Attributes.Any(x => x is ValidateSetAttribute);
+            }
+            return result;
         }
 
         public bool ParameterHasValue(string parameterName)
