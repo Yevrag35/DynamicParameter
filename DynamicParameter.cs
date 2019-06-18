@@ -167,6 +167,17 @@ namespace MG.Dynamic
             return new RuntimeDefinedParameter(this.Name, this.ParameterType, new Collection<Attribute>(attCol));
         }
 
+        private List<G> Cast<G>(dynamic[] os)
+        {
+            var gList = new List<G>(os.Length);
+            for (int i = 0; i < os.Length; i++)
+            {
+                dynamic o = os[i];
+                gList.Add((G)o);
+            }
+            return gList;
+        }
+
         object IDynParam.GetItemFromChosenValue(object chosenValue)
         {
             T outVal = default;
@@ -252,6 +263,18 @@ namespace MG.Dynamic
                 pAtt.Position = this.Position.Value;
 
             return pAtt;
+        }
+
+        public IEnumerable<G> GetBackingItems<G>()
+        {
+            Type tType = typeof(T);
+            Type gType = typeof(G);
+            if (!tType.Equals(gType))
+                throw new InvalidCastException(tType.FullName + " cannot be cast to an object of type " + gType.FullName + ".");
+
+            MethodInfo genCast = this.GetType().GetMethod("Cast", BindingFlags.NonPublic | BindingFlags.Instance).MakeGenericMethod(gType);
+            var gList = genCast.Invoke(this, new object[1] { _backingItems.ToArray() }) as List<G>;
+            return gList;
         }
 
 

@@ -44,6 +44,15 @@ namespace MG.Dynamic
             return tList;
         }
 
+        public IEnumerable<T> GetBackingItems<T>(string parameterName)
+        {
+            if (_dynParams.Count <= 0)
+                return null;
+
+            IDynParam idyp = _dynParams.Find(x => x.Name.Equals(parameterName, StringComparison.CurrentCultureIgnoreCase));
+            return idyp.GetBackingItems<T>();
+        }
+
         public object GetParameterValue(string parameterName)
         {
             object val = null;
