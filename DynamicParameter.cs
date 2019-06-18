@@ -265,16 +265,14 @@ namespace MG.Dynamic
             return pAtt;
         }
 
-        public IEnumerable<G> GetBackingItems<G>()
+        public object[] GetBackingItems()
         {
-            Type tType = typeof(T);
-            Type gType = typeof(G);
-            if (!tType.Equals(gType))
-                throw new InvalidCastException(tType.FullName + " cannot be cast to an object of type " + gType.FullName + ".");
-
-            MethodInfo genCast = this.GetType().GetMethod("Cast", BindingFlags.NonPublic | BindingFlags.Instance).MakeGenericMethod(gType);
-            var gList = genCast.Invoke(this, new object[1] { _backingItems.ToArray() }) as List<G>;
-            return gList;
+            var objArr = new object[_backingItems.Count];
+            for (int i = 0; i < _backingItems.Count; i++)
+            {
+                objArr[i] = _backingItems[i];
+            }
+            return objArr;
         }
 
 

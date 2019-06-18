@@ -43,14 +43,24 @@ namespace MG.Dynamic
             }
             return tList;
         }
+        private T[] Cast<T>(dynamic[] o)
+        {
+            var tArr = new T[o.Length];
+            for (int i = 0; i < o.Length; i++)
+            {
+                tArr[i] = (T)o[i];
+            }
+            return tArr;
+        }
 
-        public IEnumerable<T> GetBackingItems<T>(string parameterName)
+        public T[] GetBackingItems<T>(string parameterName)
         {
             if (_dynParams.Count <= 0)
                 return null;
 
             IDynParam idyp = _dynParams.Find(x => x.Name.Equals(parameterName, StringComparison.CurrentCultureIgnoreCase));
-            return idyp.GetBackingItems<T>();
+            dynamic[] backingObjs = idyp.GetBackingItems();
+            return this.Cast<T>(backingObjs);
         }
 
         public object GetParameterValue(string parameterName)
