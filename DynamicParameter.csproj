@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>7.2</LangVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -30,35 +30,34 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>7.2</LangVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Assemblies\System.Management.Automation.dll</HintPath>
+      <HintPath>packages\Microsoft.PowerShell.5.ReferenceAssemblies.1.1.0\lib\net4\System.Management.Automation.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Debug.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="DynLibrary.cs.old" />
-    <None Include="Parameter.cs" />
-    <None Include="Interfaces.cs" />
+    <None Include="Old\DynLibrary.cs.old" />
+    <None Include="packages.config" />
+    <None Include="Old\Parameter.cs" />
+    <None Include="Old\Interfaces.cs" />
     <Compile Include="DynamicLibrary.cs" />
     <Compile Include="DynamicParameter.cs" />
-    <None Include="IDynParam-Generic.cs" />
+    <None Include="Testing\IDynParam-Generic.cs" />
+    <Compile Include="Exceptions.cs" />
     <Compile Include="IDynParam.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="TestEnv\TestClass.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Assemblies\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="TestEnv\TestDynModule.psd1" />
     <None Include="TestEnv\TestDynModule.psm1" />
