@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "DynamicParameter-Core": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Program Files\\PowerShell\\6\\pwsh.exe",
+      "commandLineArgs": "-NoExit -File \"Debug.ps1\""
+    }
+  }
+}
