@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.2;netcoreapp3.1</TargetFrameworks>
+    <RootNamespace>MG.Dynamic</RootNamespace>
+    <PackageId>MG.Dynamic</PackageId>
+    <Authors>Mike Garvey</Authors>
+    <Company>Yevrag35, LLC.</Company>
+    <Product>MG.Dynamic-Core</Product>
+    <Copyright>Copyright (c) 2017-2019 Yevrag35, LLC.  All rights reserved.</Copyright>
+    <RepositoryUrl>https://github.com/Yevrag35/DynamicParameter</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageProjectUrl>https://github.com/Yevrag35/DynamicParameter</PackageProjectUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>3.3.0</Version>
+    <AssemblyName>MG.Dynamic</AssemblyName>
+    <AssemblyVersion>3.3.0</AssemblyVersion>
+    <FileVersion>3.3.0</FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.2' ">
+    <PackageReference Include="Microsoft.PowerShell.SDK" Version="6.2.3" />
+  </ItemGroup>
+
+	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
+		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.0.0-preview.5" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="..\MG.Dynamic-DotNet\*.cs" />
+	</ItemGroup>
+
+</Project>

@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "DynamicParameter-Core": {
-      "commandName": "Executable",
-      "executablePath": "C:\\Program Files\\PowerShell\\6\\pwsh.exe",
-      "commandLineArgs": "-NoExit -Command \"Import-Module .\\MG.Dynamic-Core.dll; Set-Location $desk;\""
-    }
-  }
-}
