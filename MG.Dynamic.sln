@@ -4,8 +4,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.29424.173
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MG.Dynamic-DotNet", "MG.Dynamic-DotNet\MG.Dynamic-DotNet.csproj", "{D0126AB3-1869-406C-BDD6-684F46D8B8C8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F13B53AF-4010-4E15-9B42-DE90902D669E} = {F13B53AF-4010-4E15-9B42-DE90902D669E}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MG.Dynamic-Core", "MG.Dynamic-Core\MG.Dynamic-Core.csproj", "{F13B53AF-4010-4E15-9B42-DE90902D669E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{510FF33F-0148-4826-A99C-30B1E991EE4F}"
+	ProjectSection(SolutionItems) = preProject
+		GenerateNugetPkg.ps1 = GenerateNugetPkg.ps1
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

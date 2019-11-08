@@ -11,11 +11,12 @@
     <RepositoryUrl>https://github.com/Yevrag35/DynamicParameter</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageProjectUrl>https://github.com/Yevrag35/DynamicParameter</PackageProjectUrl>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>3.3.0</Version>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Version>3.4.0</Version>
     <AssemblyName>MG.Dynamic</AssemblyName>
-    <AssemblyVersion>3.3.0</AssemblyVersion>
-    <FileVersion>3.3.0</FileVersion>
+    <AssemblyVersion>3.4.0</AssemblyVersion>
+    <FileVersion>3.4.0</FileVersion>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

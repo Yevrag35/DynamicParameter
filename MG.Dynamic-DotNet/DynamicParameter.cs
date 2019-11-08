@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Management.Automation;
 using System.Reflection;
 
@@ -209,6 +210,31 @@ namespace MG.Dynamic
             _items = new List<string>();
         }
 
+        public DynamicParameter(string name, bool parameterTypeIsArray, IEnumerable<T> items, Expression<Func<T, IConvertible>> propertyExpression)
+        {
+            if (propertyExpression.Body is MemberExpression memEx)
+            {
+                this.Name = name;
+                _mappedProperty = memEx.Member.Name;
+                Func<T, IConvertible> func = propertyExpression.Compile();
+                _backingItems = new List<T>(items);
+                var convertibles = new List<IConvertible>(items.Select(func));
+                _items = new List<string>(convertibles.Count);
+                convertibles.ForEach((ic) =>
+                {
+                    _items.Add(Convert.ToString(ic));
+                });
+
+                Type t = typeof(string);
+                if (parameterTypeIsArray)
+                    t = t.MakeArrayType();
+
+                this.ParameterType = t;
+            }
+            else
+                throw new ArgumentException("propertyExpression is not a valid member expression");
+        }
+
         /// <summary>
         /// Initializes a new instance of a DynamicParameter with the specified name.  
         /// A generic <see cref="IEnumerable{T}"/> collection is used to build the ValidateSet along
@@ -220,6 +246,7 @@ namespace MG.Dynamic
         /// which will be used to generate the ValidateSet.</param>
         /// <param name="mappingProperty">The name of the <see cref="IEnumerable"/> type's property specified in the preceeding function.</param>
         /// <param name="parameterTypeIsArray">Indicates whether the ValidateSet should accept more than value.</param>
+        [Obsolete]
         public DynamicParameter(string name, IEnumerable<T> items, Func<T, string> validateSetProperty, string mappingProperty, bool parameterTypeIsArray = false)
         {
             this.Name = name;
@@ -246,6 +273,7 @@ namespace MG.Dynamic
         /// which will be used to generate the ValidateSet.</param>
         /// <param name="mappingProperty">The name of the <see cref="IEnumerable"/> type's property specified in the preceeding function.</param>
         /// <param name="parameterTypeIsArray">Indicates whether the ValidateSet should accept more than value.</param>
+        [Obsolete]
         public DynamicParameter(string name, IEnumerable<T> items, Func<T, ValueType> validateSetProperty, string mappingProperty, bool parameterTypeIsArray = false)
         {
             this.Name = name;
@@ -280,7 +308,7 @@ namespace MG.Dynamic
 
             var attCol = new List<Attribute>();
 
-            if (_aliases.Count > 0)
+            if (_aliases != null && _aliases.Count > 0)
                 attCol.Add(new AliasAttribute(_aliases.ToArray()));
             
             if (this.AllowEmptyCollection)
@@ -310,7 +338,7 @@ namespace MG.Dynamic
             if (this.ValidateRange.HasValue)
                 attCol.Add(new ValidateRangeAttribute(this.ValidateRange.Value.Key, this.ValidateRange.Value.Value));
 
-            if (_items.Count > 0)
+            if (_items != null && _items.Count > 0)
                 attCol.Add(new ValidateSetAttribute(_items.ToArray()));
 
             attCol.Add(this.MakeParameterAttribute());
