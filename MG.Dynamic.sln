@@ -13,6 +13,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{510FF33F-0148-4826-A99C-30B1E991EE4F}"
 	ProjectSection(SolutionItems) = preProject
 		GenerateNugetPkg.ps1 = GenerateNugetPkg.ps1
+		MG.NuGet.Nuspec.dll = MG.NuGet.Nuspec.dll
 	EndProjectSection
 EndProject
 Global

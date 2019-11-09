@@ -7,8 +7,8 @@
     <owners>Mike Garvey</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <projectUrl>https://github.com/Yevrag35/DynamicParameter</projectUrl>
-    <description>Package Description</description>
-    <copyright>Copyright (c) 2017-2019 Yevrag35, LLC.  All rights reserved.</copyright>
+    <description>An assembly to provide support for C# PowerShell modules with dynamic parameters.</description>
+    <copyright>Copyright © 2017-2019 Yevrag35, LLC.</copyright>
     <repository type="Git" url="https://github.com/Yevrag35/DynamicParameter" />
     <dependencies>
       <group targetFramework=".NETFramework4.5.2">

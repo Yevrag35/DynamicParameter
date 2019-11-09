@@ -67,6 +67,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>powershell.exe -ex Bypass -File "$(SolutionDir)GenerateNugetPkg.ps1" -Configuration "$(ConfigurationName)"</PostBuildEvent>
+    <PostBuildEvent>powershell.exe -ex Bypass -File "$(SolutionDir)GenerateNugetPkg.ps1" -ProjectName "$(ProjectName)" -Configuration "$(ConfigurationName)"</PostBuildEvent>
   </PropertyGroup>
 </Project>

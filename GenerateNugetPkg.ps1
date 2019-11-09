@@ -4,6 +4,9 @@ param
 	[Parameter(Mandatory)]
 	[string] $Configuration,
 
+	[Parameter(Mandatory)]
+	[string] $ProjectName,
+
 	[Parameter(Mandatory=$false)]
 	[string] $NuspecFile
 )
@@ -11,6 +14,7 @@ param
 if ($Configuration -eq "Release")
 {
 
+	Import-Module "$PSScriptRoot\MG.NuGet.Nuspec.dll" -ErrorAction Stop;
 	Set-Location $PSScriptRoot
 
 	if (-not $PSBoundParameters.ContainsKey("NuspecFile"))
@@ -24,12 +28,9 @@ if ($Configuration -eq "Release")
 
 	if (-not [string]::IsNullOrEmpty($NuspecFile))
 	{
-		[xml]$config = Get-Content -Path $NuspecFile
-		$versionInfo = [System.Diagnostics.FileVersionInfo]::GetVersionInfo((Get-ChildItem -Path $config.package.files.file[0].src).FullName).FileVersion
-		$config.package.metadata.version = $versionInfo
-		$config.Save($NuspecFile)
+		$editor = New-Object MG.NuGet.Nuspec.NuspecEditor($NuspecFile, "$PSScriptRoot\$ProjectName\Properties\AssemblyInfo.cs")
+		$editor.Edit();
 
 		& nuget.exe pack $NuspecFile -properties "Configuration=$($Configuration)"
 	}
-
 }
