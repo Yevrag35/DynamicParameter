@@ -1,22 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.2;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>MG.Dynamic</RootNamespace>
     <PackageId>MG.Dynamic</PackageId>
     <Authors>Mike Garvey</Authors>
     <Company>Yevrag35, LLC.</Company>
     <Product>MG.Dynamic-Core</Product>
     <Copyright>Copyright © 2017-2019 Yevrag35, LLC.  All rights reserved.</Copyright>
-    <RepositoryUrl>https://github.com/Yevrag35/DynamicParameter</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Yevrag35/DynamicParameter.git</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageProjectUrl>https://github.com/Yevrag35/DynamicParameter</PackageProjectUrl>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>3.4.0</Version>
+    <Version>3.4.1</Version>
     <AssemblyName>MG.Dynamic</AssemblyName>
-    <AssemblyVersion>3.4.0</AssemblyVersion>
-    <FileVersion>3.4.0</FileVersion>
+    <AssemblyVersion>3.4.1</AssemblyVersion>
+    <FileVersion>3.4.1</FileVersion>
     <Configurations>Debug;Release</Configurations>
+    <PackageIconUrl>https://images.yevrag35.com/dynamic.ico</PackageIconUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -29,7 +30,15 @@
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.2' ">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.1|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.1|AnyCPU'">
+    <DocumentationFile>D:\Local_Repos\MG.Dynamic\MG.Dynamic-Core\MG.Dynamic.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
     <PackageReference Include="Microsoft.PowerShell.SDK" Version="6.2.3" />
   </ItemGroup>
 

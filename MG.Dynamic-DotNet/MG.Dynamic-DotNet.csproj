@@ -23,6 +23,8 @@
     <WarningLevel>4</WarningLevel>
     <LangVersion>7.3</LangVersion>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -34,6 +36,11 @@
     <LangVersion>7.3</LangVersion>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <DebugSymbols>true</DebugSymbols>
+    <DocumentationFile>bin\Release\MG.Dynamic.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
