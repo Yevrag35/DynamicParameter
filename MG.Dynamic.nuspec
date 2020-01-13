@@ -7,6 +7,7 @@
     <owners>Yevrag35, LLC.</owners>
     <icon>images\dynamic_64.png</icon>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
+	<license type="file">licenses\license.txt</license>
     <projectUrl>https://github.com/Yevrag35/DynamicParameter</projectUrl>
     <description>An assembly to provide support for C# PowerShell modules with dynamic parameters.</description>
     <copyright>Copyright © 2017-2019 Yevrag35, LLC.</copyright>
@@ -31,5 +32,6 @@
     <file src="MG.Dynamic-Core\bin\Release\netcoreapp3.1\MG.Dynamic.dll" target="lib\netcoreapp3.1\MG.Dynamic.dll" />
     <file src="MG.Dynamic-Core\MG.Dynamic.xml" target="lib\netcoreapp3.1\MG.Dynamic.xml" />
     <file src="dynamic_64.png" target="images\" />
+	<file src="license.txt" target="licenses\" />
   </files>
 </package>
