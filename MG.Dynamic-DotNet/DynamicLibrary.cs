@@ -13,10 +13,11 @@ namespace MG.Dynamic
     /// the name of the parameter.  It also has the ability to match chosen ValidateSet values to the parameters' underlying 
     /// objects.
     /// </summary>
-    public class DynamicLibrary : RuntimeDefinedParameterDictionary
+    public class DynamicLibrary : RuntimeDefinedParameterDictionary, IDisposable
     {
         #region FIELDS/CONSTANTS
 
+        private bool disposed;
         private readonly List<IDynParam> _dynParams;
         private const BindingFlags NONPUB_INST = BindingFlags.Instance | BindingFlags.NonPublic;
         private const BindingFlags PUB_INST = BindingFlags.Public | BindingFlags.Instance;
@@ -100,15 +101,14 @@ namespace MG.Dynamic
 
         #region CASTING
         private T Cast<T>(dynamic o) => (T)o;
-        private IEnumerable<T> Cast<T>(IEnumerable ienum)
-        {
-            var tList = new List<T>();
-            foreach (dynamic o in ienum)
-            {
-                tList.Add(this.Cast<T>(o));
-            }
-            return tList;
-        }
+        //private IEnumerable<T> Cast<T>(IEnumerable ienum)
+        //{
+        //    return ienum.Cast<T>();
+        //    //foreach (dynamic o in ienum)
+        //    //{
+        //    //    yield return this.Cast<T>(o);
+        //    //}
+        //}
         private T[] Cast<T>(dynamic[] o)
         {
             var tArr = new T[o.Length];
@@ -192,7 +192,7 @@ namespace MG.Dynamic
         /// <param name="parameterName">The name of the parameter to retrieve the chosen value from.</param>
         /// <exception cref="ArgumentNullException"/>
         /// <exception cref="InvalidCastException"/>
-        public T GetParameterValue<T>(string parameterName)
+        public T GetParameterValue<T>(string parameterName) where T : class
         {
             T tVal = default;
             if (this.ParameterHasValue(parameterName))
@@ -213,7 +213,7 @@ namespace MG.Dynamic
         /// <param name="parameterName">The name of the parameter to retrieve the chosen values from.</param>
         /// <exception cref="ArgumentNullException"/>
         /// <exception cref="InvalidCastException"/>
-        public T[] GetParameterValues<T>(string parameterName)
+        public T[] GetParameterValues<T>(string parameterName) where T : class
         {
             T[] tArr = null;
             if (this.ParameterHasValue(parameterName))
@@ -222,8 +222,12 @@ namespace MG.Dynamic
                 tArr = new T[objArr.Length];
                 for (int i = 0; i < objArr.Length; i++)
                 {
-                    if (objArr[i] is T tObj)
+                    object oVal = objArr[i];
+                    if (oVal is T tObj)
                         tArr[i] = tObj;
+
+                    else
+                        tArr[i] = this.Cast<T>(oVal);
                 }
             }
             return tArr;
@@ -397,6 +401,45 @@ namespace MG.Dynamic
                 result = rtParam.IsSet && rtParam.Value != null;
             }
             return result;
+        }
+
+        #endregion
+
+        #region IDISPOSABLE
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+
+            if (disposing && _dynParams.Count > 0)
+            {
+                foreach (IDynParam idp in _dynParams)
+                {
+                    Type[] genTypes = idp.GetType().GetGenericArguments();
+                    if (genTypes == null)
+                        continue;
+
+                    for (int i = 0; i < genTypes.Length; i++)
+                    {
+                        Type gt = genTypes[i];
+                        if (gt.GetInterfaces().Contains(typeof(IDisposable)))
+                        {
+                            foreach (IDisposable idis in Enumerable.Cast<IDisposable>(idp.GetBackingItems()))
+                            {
+                                idis.Dispose();
+                            }
+                        }
+                    }
+                }
+            }
+
+            disposed = true;
         }
 
         #endregion
