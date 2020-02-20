@@ -105,7 +105,7 @@ namespace MG.Dynamic
         /// <summary>
         /// Declares a collection of strings that each parameter argument is present in this specific collection.
         /// </summary>
-        List<string> ValidatedItems { get; }
+        IEnumerable<string> ValidatedItems { get; }
 
         /// <summary>
         /// Validates that the parameters's argument is not null.

@@ -331,17 +331,20 @@ namespace MG.Dynamic
         /// <exception cref="LibraryContainsNoIDynsException"/>
         public IEnumerable<T> GetUnderlyingValues<T>(string parameterName)
         {
-            if (this.LibraryContainsIDynParams())
+            if (this.LibraryContainsIDynParams() && _dynParams.OfType<DynamicParameter<T>>().Any())
             {
-                IEnumerable<object> underVals = this.GetUnderlyingValues(parameterName);
+                IEnumerable<DynamicParameter<T>> casted = _dynParams
+                    .OfType<DynamicParameter<T>>()
+                        .Where(x => x.Name.Equals(parameterName));
 
-                if (underVals != null)
+                foreach (DynamicParameter<T> dp in casted)
                 {
-                    IEnumerable<T> tArr = this.Cast<T>(underVals);
-                    return tArr;
+                    object[] oVal = this.GetParameterValues(parameterName);
+                    foreach (T tVal in dp.GetItemFromChosenValues(oVal))
+                    {
+                        yield return tVal;
+                    }
                 }
-                else
-                    return null;
             }
             else
                 throw new LibraryContainsNoIDynsException();

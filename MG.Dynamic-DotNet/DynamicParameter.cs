@@ -23,7 +23,8 @@ namespace MG.Dynamic
         private Func<T, IConvertible> _propertyFunc;
 
         //private List<string> _aliases;
-        private List<string> _items;
+        //private List<string> _items;
+        private HashSet<string> _items;
         //private List<T> _backingItems;
         private string _mappedProperty;
 
@@ -125,7 +126,8 @@ namespace MG.Dynamic
         /// <summary>
         /// Declares a collection of strings that each parameter argument is present in this specific collection.
         /// </summary>
-        public List<string> ValidatedItems => _items;
+        public HashSet<string> ValidatedItems => _items;
+        IEnumerable<string> IDynParam.ValidatedItems => _items;
 
         /// <summary>
         /// Validates that the parameters's argument is not null.
@@ -177,7 +179,7 @@ namespace MG.Dynamic
         public DynamicParameter()
         {
             //_aliases = new List<string>();
-            _items = new List<string>();
+            _items = new HashSet<string>();
             //_backingItems = new List<T>();
         }
 
@@ -210,10 +212,11 @@ namespace MG.Dynamic
             this.ParameterType = parameterType;
             //_aliases = new List<string>();
             this.BackingItems = new List<T>(items);
-            _items = new List<string>();
+            _items = new HashSet<string>();
         }
 
-        public DynamicParameter(string name, bool parameterTypeIsArray, IEnumerable<T> items, Expression<Func<T, IConvertible>> propertyExpression)
+        public DynamicParameter(string name, bool parameterTypeIsArray, IEnumerable<T> items, Expression<Func<T, IConvertible>> propertyExpression,
+            params string[] aliases)
         {
             this.Name = name;
             if (propertyExpression.Body is MemberExpression memEx)
@@ -225,10 +228,13 @@ namespace MG.Dynamic
             else
                 throw new ArgumentException("propertyExpression is not a valid member expression");
 
+            if (aliases != null)
+                this.Aliases = new List<string>(aliases);
+
             _propertyFunc = propertyExpression.Compile();
             this.BackingItems = new List<T>(items);
             var convertibles = new List<IConvertible>(items.Select(_propertyFunc));
-            _items = new List<string>(convertibles.Count);
+            _items = new HashSet<string>();
             convertibles.ForEach((ic) =>
             {
                 _items.Add(Convert.ToString(ic));
@@ -260,7 +266,7 @@ namespace MG.Dynamic
             Type t = typeof(string);
             //_aliases = new List<string>();
             this.BackingItems = new List<T>(items);
-            _items = new List<string>(items.Select(validateSetProperty));
+            _items = new HashSet<string>(items.Select(validateSetProperty));
 
             if (parameterTypeIsArray)
                 t = t.MakeArrayType();
@@ -286,7 +292,7 @@ namespace MG.Dynamic
             _mappedProperty = mappingProperty;
             //_aliases = new List<string>();
             this.BackingItems = new List<T>(items);
-            _items = new List<string>();
+            _items = new HashSet<string>();
             Type t = null;
             foreach (ValueType vt in items.Select(validateSetProperty))
             {
@@ -355,7 +361,7 @@ namespace MG.Dynamic
         /// <summary>
         /// Retrieves all the underlying objects that were used to build the ValidateSet.
         /// </summary>
-        public object[] GetBackingItems()
+        object[] IDynParam.GetBackingItems()
         {
             var objArr = new object[this.BackingItems.Count];
             for (int i = 0; i < this.BackingItems.Count; i++)
@@ -363,6 +369,12 @@ namespace MG.Dynamic
                 objArr[i] = this.BackingItems[i];
             }
             return objArr;
+        }
+        public T[] GetBackingItems()
+        {
+            var tArr = new T[this.BackingItems.Count];
+            this.BackingItems.CopyTo(tArr);
+            return tArr;
         }
 
         /// <summary>
@@ -383,23 +395,6 @@ namespace MG.Dynamic
                 }
             }
             return outVal;
-            //if (!string.IsNullOrEmpty(_mappedProperty))
-            //{
-            //    PropertyInfo pi = typeof(T).GetProperty(_mappedProperty, PUB_INST);
-            //    if (pi != null)
-            //    {
-            //        for (int i = 0; i < this.BackingItems.Count; i++)
-            //        {
-            //            T bi = this.BackingItems[i];
-            //            if (pi.GetValue(bi).Equals(chosenValue))
-            //            {
-            //                outVal = bi;
-            //                break;
-            //            }
-            //        }
-            //    }
-            //}
-            //return outVal;
         }
 
         /// <summary>
@@ -452,17 +447,22 @@ namespace MG.Dynamic
             return retVal;
         }
 
-        #region PRIVATE METHODS
-        private List<G> Cast<G>(dynamic[] os)
+        public IEnumerable<T> GetItemFromChosenValues(IEnumerable<object> chosenValues)
         {
-            var gList = new List<G>(os.Length);
-            for (int i = 0; i < os.Length; i++)
-            {
-                dynamic o = os[i];
-                gList.Add((G)o);
-            }
-            return gList;
+            return this.BackingItems.FindAll(x => chosenValues.Any(o => Convert.ToString(_propertyFunc(x)).Equals(o)));
         }
+
+        #region PRIVATE METHODS
+        //private List<G> Cast<G>(dynamic[] os)
+        //{
+        //    var gList = new List<G>(os.Length);
+        //    for (int i = 0; i < os.Length; i++)
+        //    {
+        //        dynamic o = os[i];
+        //        gList.Add((G)o);
+        //    }
+        //    return gList;
+        //}
 
         private ParameterAttribute MakeParameterAttribute()
         {
