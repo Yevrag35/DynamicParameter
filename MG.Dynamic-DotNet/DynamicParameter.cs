@@ -19,9 +19,12 @@ namespace MG.Dynamic
     {
         #region FIELDS/CONSTANTS
         private const BindingFlags PUB_INST = BindingFlags.Public | BindingFlags.Instance;
-        private List<string> _aliases;
+
+        private Func<T, IConvertible> _propertyFunc;
+
+        //private List<string> _aliases;
         private List<string> _items;
-        private List<T> _backingItems;
+        //private List<T> _backingItems;
         private string _mappedProperty;
 
         #endregion
@@ -30,7 +33,7 @@ namespace MG.Dynamic
         /// <summary>
         /// Declares alternative names for the parameter.
         /// </summary>
-        public List<string> Aliases => _aliases;
+        public List<string> Aliases { get; } = new List<string>();
 
         /// <summary>
         /// Declares an empty collection can be used as an argument to a mandatory collection parameter.
@@ -47,8 +50,8 @@ namespace MG.Dynamic
         /// </summary>
         public bool AllowNull { get; set; }
 
-        
-        public List<T> BackingItems => _backingItems;
+
+        public List<T> BackingItems { get; } = new List<T>();
 
         /// <summary>
         /// The underlying type of the backend item collection that signifies this class's generic constraint.
@@ -173,9 +176,9 @@ namespace MG.Dynamic
         /// </summary>
         public DynamicParameter()
         {
-            _aliases = new List<string>();
+            //_aliases = new List<string>();
             _items = new List<string>();
-            _backingItems = new List<T>();
+            //_backingItems = new List<T>();
         }
 
         /// <summary>
@@ -205,34 +208,37 @@ namespace MG.Dynamic
         {
             this.Name = name;
             this.ParameterType = parameterType;
-            _aliases = new List<string>();
-            _backingItems = new List<T>(items);
+            //_aliases = new List<string>();
+            this.BackingItems = new List<T>(items);
             _items = new List<string>();
         }
 
         public DynamicParameter(string name, bool parameterTypeIsArray, IEnumerable<T> items, Expression<Func<T, IConvertible>> propertyExpression)
         {
+            this.Name = name;
             if (propertyExpression.Body is MemberExpression memEx)
-            {
-                this.Name = name;
                 _mappedProperty = memEx.Member.Name;
-                Func<T, IConvertible> func = propertyExpression.Compile();
-                _backingItems = new List<T>(items);
-                var convertibles = new List<IConvertible>(items.Select(func));
-                _items = new List<string>(convertibles.Count);
-                convertibles.ForEach((ic) =>
-                {
-                    _items.Add(Convert.ToString(ic));
-                });
 
-                Type t = typeof(string);
-                if (parameterTypeIsArray)
-                    t = t.MakeArrayType();
+            else if (propertyExpression.Body is UnaryExpression unEx && unEx.Operand is MemberExpression unExMem)
+                _mappedProperty = unExMem.Member.Name;
 
-                this.ParameterType = t;
-            }
             else
                 throw new ArgumentException("propertyExpression is not a valid member expression");
+
+            _propertyFunc = propertyExpression.Compile();
+            this.BackingItems = new List<T>(items);
+            var convertibles = new List<IConvertible>(items.Select(_propertyFunc));
+            _items = new List<string>(convertibles.Count);
+            convertibles.ForEach((ic) =>
+            {
+                _items.Add(Convert.ToString(ic));
+            });
+
+            Type t = typeof(string);
+            if (parameterTypeIsArray)
+                t = t.MakeArrayType();
+
+            this.ParameterType = t;
         }
 
         /// <summary>
@@ -252,8 +258,8 @@ namespace MG.Dynamic
             this.Name = name;
             _mappedProperty = mappingProperty;
             Type t = typeof(string);
-            _aliases = new List<string>();
-            _backingItems = new List<T>(items);
+            //_aliases = new List<string>();
+            this.BackingItems = new List<T>(items);
             _items = new List<string>(items.Select(validateSetProperty));
 
             if (parameterTypeIsArray)
@@ -278,8 +284,8 @@ namespace MG.Dynamic
         {
             this.Name = name;
             _mappedProperty = mappingProperty;
-            _aliases = new List<string>();
-            _backingItems = new List<T>(items);
+            //_aliases = new List<string>();
+            this.BackingItems = new List<T>(items);
             _items = new List<string>();
             Type t = null;
             foreach (ValueType vt in items.Select(validateSetProperty))
@@ -308,8 +314,8 @@ namespace MG.Dynamic
 
             var attCol = new List<Attribute>();
 
-            if (_aliases != null && _aliases.Count > 0)
-                attCol.Add(new AliasAttribute(_aliases.ToArray()));
+            if (this.Aliases.Count > 0)
+                attCol.Add(new AliasAttribute(this.Aliases.ToArray()));
             
             if (this.AllowEmptyCollection)
                 attCol.Add(new AllowEmptyCollectionAttribute());
@@ -351,10 +357,10 @@ namespace MG.Dynamic
         /// </summary>
         public object[] GetBackingItems()
         {
-            var objArr = new object[_backingItems.Count];
-            for (int i = 0; i < _backingItems.Count; i++)
+            var objArr = new object[this.BackingItems.Count];
+            for (int i = 0; i < this.BackingItems.Count; i++)
             {
-                objArr[i] = _backingItems[i];
+                objArr[i] = this.BackingItems[i];
             }
             return objArr;
         }
@@ -366,23 +372,34 @@ namespace MG.Dynamic
         object IDynParam.GetItemFromChosenValue(object chosenValue)
         {
             T outVal = default;
-            if (!string.IsNullOrEmpty(_mappedProperty))
+            for (int i = 0; i < this.BackingItems.Count; i++)
             {
-                PropertyInfo pi = typeof(T).GetProperty(_mappedProperty, PUB_INST);
-                if (pi != null)
+                T bi = this.BackingItems[i];
+                IConvertible biVal = _propertyFunc(bi);
+                if (Convert.ToString(biVal).Equals(chosenValue))
                 {
-                    for (int i = 0; i < _backingItems.Count; i++)
-                    {
-                        T bi = _backingItems[i];
-                        if (pi.GetValue(bi).Equals(chosenValue))
-                        {
-                            outVal = bi;
-                            break;
-                        }
-                    }
+                    outVal = bi;
+                    break;
                 }
             }
             return outVal;
+            //if (!string.IsNullOrEmpty(_mappedProperty))
+            //{
+            //    PropertyInfo pi = typeof(T).GetProperty(_mappedProperty, PUB_INST);
+            //    if (pi != null)
+            //    {
+            //        for (int i = 0; i < this.BackingItems.Count; i++)
+            //        {
+            //            T bi = this.BackingItems[i];
+            //            if (pi.GetValue(bi).Equals(chosenValue))
+            //            {
+            //                outVal = bi;
+            //                break;
+            //            }
+            //        }
+            //    }
+            //}
+            //return outVal;
         }
 
         /// <summary>
@@ -397,9 +414,9 @@ namespace MG.Dynamic
                 PropertyInfo pi = typeof(T).GetProperty(_mappedProperty, PUB_INST);
                 if (pi != null)
                 {
-                    for (int i =  0; i < _backingItems.Count; i++)
+                    for (int i =  0; i < this.BackingItems.Count; i++)
                     {
-                        T bi = _backingItems[i];
+                        T bi = this.BackingItems[i];
                         
                         for (int i2 = 0; i2 < chosenValues.Length; i2++)
                         {
@@ -422,14 +439,16 @@ namespace MG.Dynamic
         /// <returns></returns>
         public T GetItemFromChosenValue(object chosenValue)
         {
-            if (string.IsNullOrEmpty(_mappedProperty))
-                throw new InvalidOperationException("No mapped property is present.");
-
             T retVal = default;
-            object outVal = ((IDynParam)this).GetItemFromChosenValue(chosenValue);
-            if (outVal != null)
-                retVal = (T)outVal;
-
+            for (int i = 0; i < this.BackingItems.Count; i++)
+            {
+                T bi = this.BackingItems[i];
+                if (Convert.ToString(_propertyFunc(bi)).Equals(chosenValue))
+                {
+                    retVal = bi;
+                    break;
+                }
+            }
             return retVal;
         }
 

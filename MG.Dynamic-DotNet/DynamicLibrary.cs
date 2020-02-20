@@ -300,12 +300,18 @@ namespace MG.Dynamic
         public T GetUnderlyingValue<T>(string parameterName)
         {
             T tVal = default;
-            if (this.LibraryContainsIDynParams())
+            if (this.LibraryContainsIDynParams() && _dynParams.OfType<DynamicParameter<T>>().Any())
             {
-                object underVal = this.GetUnderlyingValue(parameterName);
+                DynamicParameter<T> casted = _dynParams
+                    .OfType<DynamicParameter<T>>()
+                        .Where(x => x.Name.Equals(parameterName))
+                            .FirstOrDefault();
 
-                if (underVal != null)
-                    tVal = this.Cast<T>(underVal);
+                if (casted != null)
+                {
+                    object oVal = this.GetParameterValue(parameterName);
+                    tVal = casted.GetItemFromChosenValue(oVal);
+                }
             }
             else
                 throw new LibraryContainsNoIDynsException();
