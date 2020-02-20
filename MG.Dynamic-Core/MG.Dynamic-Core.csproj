@@ -12,10 +12,10 @@
     <RepositoryType>Git</RepositoryType>
     <PackageProjectUrl>https://github.com/Yevrag35/DynamicParameter</PackageProjectUrl>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>3.4.1</Version>
+    <Version>3.5.0</Version>
     <AssemblyName>MG.Dynamic</AssemblyName>
-    <AssemblyVersion>3.4.1</AssemblyVersion>
-    <FileVersion>3.4.1</FileVersion>
+    <AssemblyVersion>3.5.0</AssemblyVersion>
+    <FileVersion>3.5.0</FileVersion>
     <Configurations>Debug;Release</Configurations>
     <PackageIconUrl>https://images.yevrag35.com/dynamic.ico</PackageIconUrl>
   </PropertyGroup>
@@ -38,12 +38,12 @@
     <DocumentationFile>D:\Local_Repos\MG.Dynamic\MG.Dynamic-Core\MG.Dynamic.xml</DocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
-    <PackageReference Include="Microsoft.PowerShell.SDK" Version="6.2.3" />
-  </ItemGroup>
+	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
+		<PackageReference Include="Microsoft.PowerShell.SDK" Version="6.2.4" />
+	</ItemGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
-		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.0.0-preview.5" />
+		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.0.0-rc.2" />
 	</ItemGroup>
 
 	<ItemGroup>

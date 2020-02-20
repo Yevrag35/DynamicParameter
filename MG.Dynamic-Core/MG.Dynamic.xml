@@ -359,7 +359,7 @@
             Converts the inherited class into its RuntimeDefinedParameter equivalent.
             </summary>
         </member>
-        <member name="M:MG.Dynamic.DynamicParameter`1.GetBackingItems">
+        <member name="M:MG.Dynamic.DynamicParameter`1.MG#Dynamic#IDynParam#GetBackingItems">
             <summary>
             Retrieves all the underlying objects that were used to build the ValidateSet.
             </summary>
