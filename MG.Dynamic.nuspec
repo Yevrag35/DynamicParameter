@@ -3,16 +3,18 @@
   <metadata>
     <id>MG.Dynamic</id>
     <title>MG.Dynamic</title>
-    <version>3.5.0</version>
+    <version>3.6.0</version>
     <authors>Mike Garvey</authors>
     <owners>Yevrag35, LLC.</owners>
     <icon>images\dynamic_64.png</icon>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="file">licenses\license.txt</license>
     <projectUrl>https://github.com/Yevrag35/DynamicParameter</projectUrl>
+    <language>en-US</language>
     <description>An assembly to provide support for C# PowerShell modules with dynamic parameters.</description>
     <summary>An assembly to provide support for C# PowerShell modules with dynamic parameters.</summary>
     <copyright>Copyright © 2017-2020 Yevrag35, LLC.</copyright>
+    <releaseNotes>Bump to (GA) PowerShell 7 SDK</releaseNotes>
     <repository type="Git" url="https://github.com/Yevrag35/DynamicParameter.git" />
     <dependencies>
       <group targetFramework=".NETFramework4.5.2">
@@ -22,7 +24,7 @@
         <dependency id="Microsoft.PowerShell.SDK" version="6.2.4" exclude="Build,Analyzers" />
       </group>
       <group targetFramework=".NETCoreApp3.1">
-        <dependency id="Microsoft.PowerShell.SDK" version="7.0.0-rc.2" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.PowerShell.SDK" version="7.0.0" exclude="Build,Analyzers" />
       </group>
     </dependencies>
   </metadata>
