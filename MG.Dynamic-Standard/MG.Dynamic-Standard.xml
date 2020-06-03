@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>MG.Dynamic</name>
+        <name>MG.Dynamic-Standard</name>
     </assembly>
     <members>
         <member name="T:MG.Dynamic.DynamicLibrary">
