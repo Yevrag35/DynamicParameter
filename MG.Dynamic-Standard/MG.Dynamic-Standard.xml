@@ -1,0 +1,551 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MG.Dynamic-Standard</name>
+    </assembly>
+    <members>
+        <member name="T:MG.Dynamic.DynamicLibrary">
+            <summary>
+            Represents a collection of <see cref="T:System.Management.Automation.RuntimeDefinedParameter"/> or <see cref="T:MG.Dynamic.IDynParam"/> classes that are keyed on
+            the name of the parameter.  It also has the ability to match chosen ValidateSet values to the parameters' underlying 
+            objects.
+            </summary>
+        </member>
+        <member name="M:MG.Dynamic.DynamicLibrary.#ctor">
+            <summary>
+            Initializes a blank instance of the dynamic library.
+            </summary>
+        </member>
+        <member name="M:MG.Dynamic.DynamicLibrary.Add(MG.Dynamic.IDynParam)">
+            <summary>
+            Adds the specified <see cref="T:MG.Dynamic.IDynParam"/> interface to the library.
+            </summary>
+            <param name="dynamicParameter">The interface to add to the library.</param>
+            <exception cref="T:System.ArgumentException">An item with the same key already exists within the library.</exception>
+            <exception cref="T:System.ArgumentNullException">The interface is null</exception>
+        </member>
+        <member name="M:MG.Dynamic.DynamicLibrary.Add(System.Management.Automation.RuntimeDefinedParameter)">
+            <summary>
+            Adds the specified <see cref="T:System.Management.Automation.RuntimeDefinedParameter"/> to the dictionary with the key the same as the parameter's name.
+            </summary>
+            <param name="rtParam">The parameter to add to the dictionary.</param>
+        </member>
+        <member name="M:MG.Dynamic.DynamicLibrary.AddRange(System.Collections.Generic.IEnumerable{MG.Dynamic.IDynParam})">
+            <summary>
+            Adds the interface elements of the specified collection to the end of the library.
+            </summary>
+            <param name="parameters">The collection whose elements should be added to the end of the library.
+            The collection itself cannot be null, and cannot contain elements that are null.</param>
+            <exception cref="T:System.ArgumentNullException"/>
+        </member>
+        <member name="M:MG.Dynamic.DynamicLibrary.AddRange(System.Collections.Generic.IEnumerable{System.Management.Automation.RuntimeDefinedParameter})">
+            <summary>
+            Adds the elements of the specified collection of <see cref="T:System.Management.Automation.RuntimeDefinedParameter"/>'s to the end of the library.
+            </summary>
+            <param name="definedParameters">The collection whose elements should be added to the end of the library.
+            The collection itself cannot be null, and cannot contain elements that are null.</param>
+            <exception cref="T:System.ArgumentNullException"/>
+        </member>
+        <member name="M:MG.Dynamic.DynamicLibrary.Clear">
+            <summary>
+            Removes all keys, values, and <see cref="T:MG.Dynamic.IDynParam"/> interfaces from the library.
+            </summary>
+        </member>
+        <member name="M:MG.Dynamic.DynamicLibrary.GetBackingItems``1(System.String)">
+            <summary>
+            Retrieves all of the underlying items from an <see cref="T:MG.Dynamic.IDynParam"/> parameter and casts the results
+            as a generic-type array.
+            </summary>
+            <typeparam name="T">The type to cast the results as.</typeparam>
+            <param name="parameterName">The name of the parameter that implements <see cref="T:MG.Dynamic.IDynParam"/> to retrieve its underlying values from.</param>
+            <exception cref="T:System.ArgumentNullException"/>
+            <exception cref="T:System.InvalidCastException"/>
+            <exception cref="T:System.InvalidOperationException">Thrown when the library does not contain any parameters that inherit from <see cref="T:MG.Dynamic.IDynParam"/>.</exception>
+        </member>
+        <member name="M:MG.Dynamic.DynamicLibrary.GetParameterValue(System.String)">
+            <summary>
+            Retrieves the value chosen from the ValidateSet of the parameter.
+            </summary>
+            <param name="parameterName">The name of the parameter to retrieve the chosen value from.</param>
+            <exception cref="T:System.ArgumentNullException"/>
+        </member>
+        <member name="M:MG.Dynamic.DynamicLibrary.GetParameterValues(System.String)">
+            <summary>
+            Retrieves the values that were chosen from the ValidateSet of the parameter.
+            </summary>
+            <param name="parameterName">The name of the parameter to retrieve the chosen values from.</param>
+            <exception cref="T:System.ArgumentNullException"/>
+        </member>
+        <member name="M:MG.Dynamic.DynamicLibrary.GetParameterValue``1(System.String)">
+            <summary>
+            Retrieves the value chosen from the ValidateSet of the parameter and casts it as the specified type.
+            </summary>
+            <typeparam name="T">The type to cast the result as.</typeparam>
+            <param name="parameterName">The name of the parameter to retrieve the chosen value from.</param>
+            <exception cref="T:System.ArgumentNullException"/>
+            <exception cref="T:System.InvalidCastException"/>
+        </member>
+        <member name="M:MG.Dynamic.DynamicLibrary.GetParameterValues``1(System.String)">
+            <summary>
+            Retrieves the values that were chosen from the ValidateSet of the parameter 
+            as an array of the specified type.
+            </summary>
+            <typeparam name="T">The type to cast the results as.</typeparam>
+            <param name="parameterName">The name of the parameter to retrieve the chosen values from.</param>
+            <exception cref="T:System.ArgumentNullException"/>
+            <exception cref="T:System.InvalidCastException"/>
+        </member>
+        <member name="M:MG.Dynamic.DynamicLibrary.GetUnderlyingValue(System.String)">
+            <summary>
+            Retrieves the underlying value from an <see cref="T:MG.Dynamic.IDynParam"/> parameter whose designated property value matches
+            the chosen value from the ValidateSet.
+            </summary>
+            <param name="parameterName">The parameter that implements <see cref="T:MG.Dynamic.IDynParam"/> to retrieve the chosen value from
+            and match it to one of its underlying values.</param>
+            <exception cref="T:System.ArgumentNullException"/>
+            <exception cref="T:MG.Dynamic.LibraryContainsNoIDynsException"/>
+        </member>
+        <member name="M:MG.Dynamic.DynamicLibrary.GetUnderlyingValues(System.String)">
+            <summary>
+            Retrieves the underlying values from an <see cref="T:MG.Dynamic.IDynParam"/> parameter whose designated property value matches
+            any of the chosen values from the ValidateSet.
+            </summary>
+            <param name="parameterName">The parameter that implements <see cref="T:MG.Dynamic.IDynParam"/> to retrieve the chosen values from
+            and match it to any one of its underlying values.</param>
+            <exception cref="T:System.ArgumentNullException"/>
+            <exception cref="T:System.InvalidOperationException"/>
+            <exception cref="T:MG.Dynamic.LibraryContainsNoIDynsException"/>
+        </member>
+        <member name="M:MG.Dynamic.DynamicLibrary.GetUnderlyingValue``1(System.String)">
+            <summary>
+            Retrieves the underlying value from an <see cref="T:MG.Dynamic.IDynParam"/> parameter whose designated property value matches
+            the chosen value from the ValidateSet.  It then casts the result to the specified type.
+            </summary>
+            <typeparam name="T">The type to cast the result as.</typeparam>
+            <param name="parameterName">The parameter that implements <see cref="T:MG.Dynamic.IDynParam"/> to retrieve the chosen value from
+            and match it to one of its underlying values.</param>
+            <exception cref="T:System.ArgumentNullException"/>
+            <exception cref="T:System.InvalidCastException"/>
+            <exception cref="T:MG.Dynamic.LibraryContainsNoIDynsException"/>
+        </member>
+        <member name="M:MG.Dynamic.DynamicLibrary.GetUnderlyingValues``1(System.String)">
+            <summary>
+            Retrieves the underlying values from an <see cref="T:MG.Dynamic.IDynParam"/> parameter whose designated property value matches
+            any of the chosen values from the ValidateSet.  It then casts the results to a collection of the specified type.
+            </summary>
+            <typeparam name="T">The type to cast the results as.</typeparam>
+            <param name="parameterName">The parameter that implements <see cref="T:MG.Dynamic.IDynParam"/> to retrieve the chosen values from
+            and match it to any one of its underlying values.</param>
+            <exception cref="T:System.ArgumentNullException"/>
+            <exception cref="T:System.InvalidCastException"/>
+            <exception cref="T:MG.Dynamic.LibraryContainsNoIDynsException"/>
+        </member>
+        <member name="M:MG.Dynamic.DynamicLibrary.LibraryContainsIDynParams">
+            <summary>
+            Checks if the library contains any parameters who implement <see cref="T:MG.Dynamic.IDynParam"/>.
+            </summary>
+        </member>
+        <member name="M:MG.Dynamic.DynamicLibrary.ParameterIsValidateSet(System.String)">
+            <summary>
+            Checks if the specified parameter's attributes contain the <see cref="T:System.Management.Automation.ValidateSetAttribute"/>.
+            </summary>
+            <param name="parameterName">The name of the parameter to check for the attribute.</param>
+            <exception cref="T:System.ArgumentNullException"/>
+        </member>
+        <member name="M:MG.Dynamic.DynamicLibrary.ParameterHasValue(System.String)">
+            <summary>
+            Checks if the specified parameter has chosen value(s) from its ValidateSet.
+            </summary>
+            <param name="parameterName">The name of the parameter to check for values.</param>
+            <exception cref="T:System.ArgumentNullException"/>
+        </member>
+        <member name="T:MG.Dynamic.DynamicParameter`1">
+            <summary>
+            A class to be used when constructing a <see cref="T:MG.Dynamic.DynamicLibrary"/> or <see cref="T:System.Management.Automation.RuntimeDefinedParameterDictionary"/>
+            without the need for a collection of attributes.  This class can store underlying values that create a dynamic 
+            'ValidateSet' off of one of its properties.  The generic type is of the underlying items type.
+            </summary>
+            <typeparam name="T">The type of the underlying items for the ValidateSet.</typeparam>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.Aliases">
+            <summary>
+            Declares alternative names for the parameter.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.AllowEmptyCollection">
+            <summary>
+            Declares an empty collection can be used as an argument to a mandatory collection parameter.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.AllowEmptyString">
+            <summary>
+            Declares an empty string can be used as an argument to a mandatory string parameter.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.AllowNull">
+            <summary>
+            Declares a NULL can be used as an argument to a mandatory parameter.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.MG#Dynamic#IDynParam#BackingItemType">
+            <summary>
+            The underlying type of the backend item collection that signifies this class's generic constraint.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.DontShow">
+            <summary>
+            Declares that the parameter will be hidden from the console unless typed explicitly.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.HelpMessage">
+            <summary>
+            Gets and sets a short description for this parameter, suitable for presentation as a tooltip.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.HelpMessageBaseName">
+            <summary>
+            Gets and sets the base name of the resource for a help message. 
+            When this field is speicifed, HelpMessageResourceId must also be specified.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.HelpMessageResourceId">
+            <summary>
+            Gets and sets the Id of the resource for a help message. 
+            When this field is speicifed, HelpMessageBaseName must also be specified.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.Mandatory">
+            <summary>
+            Gets and sets a flag specifying if this parameter is Mandatory. 
+            When it is not specified, false is assumed and the parameter is considered optional.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.Name">
+            <summary>
+            Gets or sets the name of the parameter.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.ParameterSetName">
+            <summary>
+            Gets and sets the name of the parameter set this parameter belongs to. 
+            When it is not specified, ParameterAttribute.AllParameterSets is assumed.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.ParameterType">
+            <summary>
+            Gets or sets the type of the parameter.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.Position">
+            <summary>
+            Gets and sets the parameter position. If not set, the parameter is named.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.SupportsWildcards">
+            <summary>
+            Declares that this parameter supports wildcards.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.ValidateCount">
+            <summary>
+            Declares that this parameter argument count must be in the specified range specified by the key (MinCount) and value (MaxCount).
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.ValidateLength">
+            <summary>
+            Declares that the length of each parameter argument's Length must fall in the range specified by the key (MinLength) and value (MaxLength).
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.ValidatedItems">
+            <summary>
+            Declares a collection of strings that each parameter argument is present in this specific collection.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.ValidateNotNull">
+            <summary>
+            Validates that the parameters's argument is not null.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.ValidateNotNullOrEmpty">
+            <summary>
+            Validates that the parameters's argument is not null, is not an empty string, and is not an empty collection.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.ValidatePattern">
+            <summary>
+            Validates that each parameter argument matches specified the RegexPattern.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.ValidateRange">
+            <summary>
+            Declares that each parameter argument must fall in the range specified by the key (MinRange) and value (MaxRange).
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.ValueFromPipeline">
+            <summary>
+            Gets and sets a flag that specifies that this parameter can take values from the incoming pipeline object. 
+            When it is not specified, false is assumed.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.ValueFromPipelineByPropertyName">
+            <summary>
+            Gets and sets a flag that specifies that this parameter can take values from
+            a property in the incoming pipeline object with the same name as the parameter.
+            When it is not specified, false is assumed.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.DynamicParameter`1.ValueFromRemainingArguments">
+            <summary>
+            Gets and sets a flag that specifies that the remaining command line parameters
+            should be associated with this parameter in the form of an array. When it is
+            not specified, false is assumed.
+            </summary>
+        </member>
+        <member name="M:MG.Dynamic.DynamicParameter`1.#ctor">
+            <summary>
+            Initializes a blank instance of a DynamicParameter.
+            </summary>
+        </member>
+        <member name="M:MG.Dynamic.DynamicParameter`1.#ctor(System.String)">
+            <summary>
+            Initializes a blank instance of a DynamicParameter with the specified name.
+            </summary>
+            <param name="name">The name of the dynamic parameter.</param>
+        </member>
+        <member name="M:MG.Dynamic.DynamicParameter`1.#ctor(System.String,System.Type)">
+            <summary>
+            Initializes a blank instance of a DynamicParameter with the specified name, along with
+            specifying the property type of the future ValidateSet.
+            </summary>
+            <param name="name">The name of the dynamic parameter.</param>
+            <param name="parameterType">The property type of the ValidateSet.</param>
+        </member>
+        <member name="M:MG.Dynamic.DynamicParameter`1.#ctor(System.String,System.Type,System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Initializes a new instance of a DynamicParameter with the specified name.  A generic <see cref="T:System.Collections.Generic.IEnumerable`1"/>
+            collection is used for the ValidateSet with the specifying parameter type.
+            </summary>
+            <param name="name">The name of the dynamic parameter.</param>
+            <param name="parameterType">The property type for the ValidateSet.</param>
+            <param name="items">The generic <see cref="T:System.Collections.IEnumerable"/> to use in the ValidateSet.</param>
+        </member>
+        <member name="M:MG.Dynamic.DynamicParameter`1.#ctor(System.String,System.Collections.Generic.IEnumerable{`0},System.Func{`0,System.String},System.String,System.Boolean)">
+            <summary>
+            Initializes a new instance of a DynamicParameter with the specified name.  
+            A generic <see cref="T:System.Collections.Generic.IEnumerable`1"/> collection is used to build the ValidateSet along
+            with an accompanying function to define the <see cref="T:System.String"/> property to use.
+            </summary>
+            <param name="name">The name of the dynamic parameter.</param>
+            <param name="items">The generic <see cref="T:System.Collections.IEnumerable"/> containing the underlying values for the parameter.</param>
+            <param name="validateSetProperty">The function predicate matching to the generic type's property that is of the type <see cref="T:System.String"/>,
+            which will be used to generate the ValidateSet.</param>
+            <param name="mappingProperty">The name of the <see cref="T:System.Collections.IEnumerable"/> type's property specified in the preceeding function.</param>
+            <param name="parameterTypeIsArray">Indicates whether the ValidateSet should accept more than value.</param>
+        </member>
+        <member name="M:MG.Dynamic.DynamicParameter`1.#ctor(System.String,System.Collections.Generic.IEnumerable{`0},System.Func{`0,System.ValueType},System.String,System.Boolean)">
+            <summary>
+            Initializes a new instance of a DynamicParameter with the specified name.  
+            A generic <see cref="T:System.Collections.Generic.IEnumerable`1"/> collection is used to build the ValidateSet along
+            with an accompanying function to define the <see cref="T:System.ValueType"/> property to use.
+            </summary>
+            <param name="name">The name of the dynamic parameter.</param>
+            <param name="items">The generic <see cref="T:System.Collections.IEnumerable"/> containing the underlying values for the parameter.</param>
+            <param name="validateSetProperty">The function predicate matching to the generic type's property that is of the type <see cref="T:System.ValueType"/>,
+            which will be used to generate the ValidateSet.</param>
+            <param name="mappingProperty">The name of the <see cref="T:System.Collections.IEnumerable"/> type's property specified in the preceeding function.</param>
+            <param name="parameterTypeIsArray">Indicates whether the ValidateSet should accept more than value.</param>
+        </member>
+        <member name="M:MG.Dynamic.DynamicParameter`1.AsRuntimeParameter">
+            <summary>
+            Converts the inherited class into its RuntimeDefinedParameter equivalent.
+            </summary>
+        </member>
+        <member name="M:MG.Dynamic.DynamicParameter`1.MG#Dynamic#IDynParam#GetBackingItems">
+            <summary>
+            Retrieves all the underlying objects that were used to build the ValidateSet.
+            </summary>
+        </member>
+        <member name="M:MG.Dynamic.DynamicParameter`1.MG#Dynamic#IDynParam#GetItemFromChosenValue(System.Object)">
+            <summary>
+            Finds the underlying object that matches the designated property used to build a ValidateSet attribute.
+            </summary>
+            <param name="chosenValue">The value selected after IDynamicParameters has been processed.</param>
+        </member>
+        <member name="M:MG.Dynamic.DynamicParameter`1.MG#Dynamic#IDynParam#GetItemsFromChosenValues(System.Collections.Generic.IEnumerable{System.Object})">
+            <summary>
+            Finds the underlying objects that match the designated property used to build a ValidateSet attribute.
+            </summary>
+            <param name="chosenValues">The values selected after IDynamicParameters has been processed.</param>
+        </member>
+        <member name="M:MG.Dynamic.DynamicParameter`1.GetItemFromChosenValue(System.Object)">
+            <summary>
+            Finds the underlying object that matches the designated property used to build a ValidateSet attribute and
+            casts the result as the class's generic type.
+            </summary>
+            <param name="chosenValue">The value selected after IDynamicParameters has been processed.</param>
+            <returns></returns>
+        </member>
+        <member name="T:MG.Dynamic.IDynParam">
+            <summary>
+            Defines properties and methods to store underlying values that 
+            create a dynamic 'ValidateSet' off of one of its properties to be used within a <see cref="T:MG.Dynamic.DynamicLibrary"/>.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.Aliases">
+            <summary>
+            Declares alternative names for the parameter.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.AllowEmptyCollection">
+            <summary>
+            Declares an empty collection can be used as an argument to a mandatory collection parameter.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.AllowEmptyString">
+            <summary>
+            Declares an empty string can be used as an argument to a mandatory string parameter.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.AllowNull">
+            <summary>
+            Declares a NULL can be used as an argument to a mandatory parameter.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.BackingItemType">
+            <summary>
+            The underlying type of the backend item collection that signifies this class's generic constraint.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.DontShow">
+            <summary>
+            Declares that the parameter will be hidden from the console unless typed explicitly.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.HelpMessage">
+            <summary>
+            Gets and sets a short description for this parameter, suitable for presentation as a tooltip.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.HelpMessageBaseName">
+            <summary>
+            Gets and sets the base name of the resource for a help message. 
+            When this field is speicifed, HelpMessageResourceId must also be specified.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.HelpMessageResourceId">
+            <summary>
+            Gets and sets the Id of the resource for a help message. 
+            When this field is speicifed, HelpMessageBaseName must also be specified.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.Mandatory">
+            <summary>
+            Gets and sets a flag specifying if this parameter is Mandatory. 
+            When it is not specified, false is assumed and the parameter is considered optional.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.Name">
+            <summary>
+            Gets or sets the name of the parameter.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.ParameterSetName">
+            <summary>
+            Gets and sets the name of the parameter set this parameter belongs to. 
+            When it is not specified, ParameterAttribute.AllParameterSets is assumed.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.ParameterType">
+            <summary>
+            Gets or sets the type of the parameter.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.Position">
+            <summary>
+            Gets and sets the parameter position. If not set, the parameter is named.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.SupportsWildcards">
+            <summary>
+            Declares that this parameter supports wildcards.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.ValidateCount">
+            <summary>
+            Declares that this parameter argument count must be in the specified range specified by the key (MinCount) and value (MaxCount).
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.ValidateLength">
+            <summary>
+            Declares that the length of each parameter argument's Length must fall in the range specified by the key (MinLength) and value (MaxLength).
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.ValidatedItems">
+            <summary>
+            Declares a collection of strings that each parameter argument is present in this specific collection.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.ValidateNotNull">
+            <summary>
+            Validates that the parameters's argument is not null.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.ValidateNotNullOrEmpty">
+            <summary>
+            Validates that the parameters's argument is not null, is not an empty string, and is not an empty collection.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.ValidatePattern">
+            <summary>
+            Validates that each parameter argument matches specified the RegexPattern.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.ValidateRange">
+            <summary>
+            Declares that each parameter argument must fall in the range specified by the key (MinRange) and value (MaxRange).
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.ValueFromPipeline">
+            <summary>
+            Gets and sets a flag that specifies that this parameter can take values from the incoming pipeline object. 
+            When it is not specified, false is assumed.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.ValueFromPipelineByPropertyName">
+            <summary>
+            Gets and sets a flag that specifies that this parameter can take values from
+            a property in the incoming pipeline object with the same name as the parameter.
+            When it is not specified, false is assumed.
+            </summary>
+        </member>
+        <member name="P:MG.Dynamic.IDynParam.ValueFromRemainingArguments">
+            <summary>
+            Gets and sets a flag that specifies that the remaining command line parameters
+            should be associated with this parameter in the form of an array. When it is
+            not specified, false is assumed.
+            </summary>
+        </member>
+        <member name="M:MG.Dynamic.IDynParam.AsRuntimeParameter">
+            <summary>
+            Converts the inherited class into its RuntimeDefinedParameter equivalent.
+            </summary>
+        </member>
+        <member name="M:MG.Dynamic.IDynParam.GetItemFromChosenValue(System.Object)">
+            <summary>
+            Finds the underlying object that matches the designated property used to build a ValidateSet attribute.
+            </summary>
+            <param name="chosenValue">The value selected after IDynamicParameters has been processed.</param>
+        </member>
+        <member name="M:MG.Dynamic.IDynParam.GetItemsFromChosenValues(System.Collections.Generic.IEnumerable{System.Object})">
+            <summary>
+            Finds the underlying objects that match the designated property used to build a ValidateSet attribute.
+            </summary>
+            <param name="chosenValues">The values selected after IDynamicParameters has been processed.</param>
+        </member>
+        <member name="M:MG.Dynamic.IDynParam.GetBackingItems">
+            <summary>
+            Retrieves all the underlying objects that were used to build the ValidateSet.
+            </summary>
+        </member>
+    </members>
+</doc>
