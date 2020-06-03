@@ -113,6 +113,7 @@
             <param name="parameterName">The parameter that implements <see cref="T:MG.Dynamic.IDynParam"/> to retrieve the chosen values from
             and match it to any one of its underlying values.</param>
             <exception cref="T:System.ArgumentNullException"/>
+            <exception cref="T:System.InvalidOperationException"/>
             <exception cref="T:MG.Dynamic.LibraryContainsNoIDynsException"/>
         </member>
         <member name="M:MG.Dynamic.DynamicLibrary.GetUnderlyingValue``1(System.String)">
@@ -370,7 +371,7 @@
             </summary>
             <param name="chosenValue">The value selected after IDynamicParameters has been processed.</param>
         </member>
-        <member name="M:MG.Dynamic.DynamicParameter`1.MG#Dynamic#IDynParam#GetItemsFromChosenValues(System.Object[])">
+        <member name="M:MG.Dynamic.DynamicParameter`1.MG#Dynamic#IDynParam#GetItemsFromChosenValues(System.Collections.Generic.IEnumerable{System.Object})">
             <summary>
             Finds the underlying objects that match the designated property used to build a ValidateSet attribute.
             </summary>
@@ -535,7 +536,7 @@
             </summary>
             <param name="chosenValue">The value selected after IDynamicParameters has been processed.</param>
         </member>
-        <member name="M:MG.Dynamic.IDynParam.GetItemsFromChosenValues(System.Object[])">
+        <member name="M:MG.Dynamic.IDynParam.GetItemsFromChosenValues(System.Collections.Generic.IEnumerable{System.Object})">
             <summary>
             Finds the underlying objects that match the designated property used to build a ValidateSet attribute.
             </summary>

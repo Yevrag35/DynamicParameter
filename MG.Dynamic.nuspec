@@ -37,9 +37,9 @@
     <file src="MG.Dynamic-Core\bin\Release\netcoreapp2.1\MG.Dynamic.dll" target="lib\netcoreapp2.1\MG.Dynamic.dll" />
     <file src="MG.Dynamic-Core\bin\Release\netcoreapp2.1\MG.Dynamic.xml" target="lib\netcoreapp2.1\MG.Dynamic.xml" />
     <file src="MG.Dynamic-Core\bin\Release\netcoreapp3.1\MG.Dynamic.dll" target="lib\netcoreapp3.1\MG.Dynamic.dll" />
-	<file src="MG.Dynamic-Core\bin\Release\netcoreapp3.1\MG.Dynamic.xml" target="lib\netcoreapp3.1\MG.Dynamic.xml" />
-	<file src="MG.Dynamic-Standard\bin\Release\netstandard2.0\MG.Dynamic-Standard.dll" target="lib\netstandard2.0\MG.Dynamic-Standard.dll" />
-	<file src="MG.Dynamic-Standard\bin\Release\netstandard2.0\MG.Dynamic-Standard.xml" target="lib\netstandard2.0\MG-Dynamic-Standard.xml" />
+    <file src="MG.Dynamic-Core\MG.Dynamic.xml" target="lib\netcoreapp3.1\MG.Dynamic.xml" />
+    <file src="MG.Dynamic-Standard\bin\Release\netstandard2.0\MG.Dynamic-Standard.dll" target="lib\netstandard2.0\MG.Dynamic-Standard.dll" />
+    <file src="MG.Dynamic-Standard\bin\Release\netstandard2.0\MG.Dynamic-Standard.xml" target="lib\netstandard2.0\MG-Dynamic-Standard.xml" />
     <file src="dynamic_64.png" target="images\" />
     <file src="license.txt" target="licenses\" />
   </files>
