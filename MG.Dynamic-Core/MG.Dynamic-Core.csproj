@@ -39,11 +39,15 @@
   </PropertyGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
-		<PackageReference Include="Microsoft.PowerShell.SDK" Version="6.2.4" />
+		<PackageReference Include="Microsoft.PowerShell.SDK" Version="6.2.5">
+			<IncludeAssets>compile</IncludeAssets>
+		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
-		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.0.0" />
+		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.0.0">
+			<IncludeAssets>compile</IncludeAssets>
+		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>

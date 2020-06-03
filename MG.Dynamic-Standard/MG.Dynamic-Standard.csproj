@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>MG.Dynamic</RootNamespace>
+    <Version>3.7.0</Version>
+    <Authors>Mike Garvey</Authors>
+    <Company>Yevrag35, LLC.</Company>
+    <Copyright>Copyright (c) 2017-2020 Yevrag35, LLC.</Copyright>
+    <AssemblyVersion>3.7.0</AssemblyVersion>
+    <FileVersion>3.7.0</FileVersion>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="..\MG.Dynamic-DotNet\*.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" />
+	</ItemGroup>
+
+</Project>
