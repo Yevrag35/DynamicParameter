@@ -271,20 +271,18 @@ namespace MG.Dynamic
         /// <param name="parameterName">The parameter that implements <see cref="IDynParam"/> to retrieve the chosen values from
         /// and match it to any one of its underlying values.</param>
         /// <exception cref="ArgumentNullException"/>
+        /// <exception cref="InvalidOperationException"/>
         /// <exception cref="LibraryContainsNoIDynsException"/>
         public IEnumerable<object> GetUnderlyingValues(string parameterName)
         {
-            var list = new List<object>();
-            if (this.LibraryContainsIDynParams())
-            {
-                object[] oVals = this.GetParameterValues(parameterName);
-                list.AddRange(_dynParams.Single(
-                    x => x.Name.Equals(parameterName)).GetItemsFromChosenValues(oVals));
-            }
-            else
-                throw new LibraryContainsNoIDynsException();
-
-            return list;
+            if ( ! this.LibraryContainsIDynParams())
+                return null;
+            
+            IEnumerable<object> oVals = this.GetParameterValues(parameterName);
+            return _dynParams?
+                .Single(x =>
+                    x.Name.Equals(parameterName))
+                        .GetItemsFromChosenValues(oVals);
         }
 
         #endregion

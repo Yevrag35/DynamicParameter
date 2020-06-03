@@ -162,7 +162,7 @@ namespace MG.Dynamic
         /// Finds the underlying objects that match the designated property used to build a ValidateSet attribute.
         /// </summary>
         /// <param name="chosenValues">The values selected after IDynamicParameters has been processed.</param>
-        IEnumerable<object> GetItemsFromChosenValues(object[] chosenValues);
+        IEnumerable<object> GetItemsFromChosenValues(IEnumerable<object> chosenValues);
 
         /// <summary>
         /// Retrieves all the underlying objects that were used to build the ValidateSet.
