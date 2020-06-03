@@ -11,6 +11,10 @@
     <FileVersion>3.7.0</FileVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\Users\Mike\source\repos\DynamicParameter\MG.Dynamic-Standard\MG.Dynamic-Standard.xml</DocumentationFile>
+  </PropertyGroup>
+
 	<ItemGroup>
 		<Compile Include="..\MG.Dynamic-DotNet\*.cs" />
 	</ItemGroup>

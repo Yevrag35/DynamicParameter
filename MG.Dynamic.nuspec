@@ -14,14 +14,17 @@
     <description>An assembly to provide support for C# PowerShell modules with dynamic parameters.</description>
     <summary>An assembly to provide support for C# PowerShell modules with dynamic parameters.</summary>
     <copyright>Copyright © 2017-2020 Yevrag35, LLC.</copyright>
-    <releaseNotes>Bump to (GA) PowerShell 7 SDK</releaseNotes>
+    <releaseNotes>Adding PowerShell Standard Project</releaseNotes>
     <repository type="Git" url="https://github.com/Yevrag35/DynamicParameter.git" />
     <dependencies>
       <group targetFramework=".NETFramework4.5.2">
         <dependency id="Microsoft.PowerShell.5.ReferenceAssemblies" version="1.1.0" />
       </group>
+      <group targetFramework="NETStandard2.0">
+        <dependency id="PowerShellStandard.Library" version="5.1.0" exclude="Build,Analyzers" />
+      </group>
       <group targetFramework=".NETCoreApp2.1">
-        <dependency id="Microsoft.PowerShell.SDK" version="6.2.4" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.PowerShell.SDK" version="6.2.5" exclude="Build,Analyzers" />
       </group>
       <group targetFramework=".NETCoreApp3.1">
         <dependency id="Microsoft.PowerShell.SDK" version="7.0.0" exclude="Build,Analyzers" />

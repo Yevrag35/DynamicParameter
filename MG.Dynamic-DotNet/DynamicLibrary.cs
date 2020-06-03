@@ -100,7 +100,7 @@ namespace MG.Dynamic
         #endregion
 
         #region CASTING
-        private T Cast<T>(dynamic o) => (T)o;
+        private T Cast<T>(object o) => (T)o;
         //private IEnumerable<T> Cast<T>(IEnumerable ienum)
         //{
         //    return ienum.Cast<T>();
@@ -109,7 +109,7 @@ namespace MG.Dynamic
         //    //    yield return this.Cast<T>(o);
         //    //}
         //}
-        private T[] Cast<T>(dynamic[] o)
+        private T[] Cast<T>(object[] o)
         {
             var tArr = new T[o.Length];
             for (int i = 0; i < o.Length; i++)
