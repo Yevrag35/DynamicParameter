@@ -140,9 +140,12 @@ namespace MG.Dynamic
             if (!this.LibraryContainsIDynParams())
                 throw new LibraryContainsNoIDynsException();
     
-            IDynParam idyp = _dynParams.Find(x => x.Name.Equals(parameterName, StringComparison.CurrentCultureIgnoreCase));
-            dynamic[] backingObjs = idyp.GetBackingItems();
-            return this.Cast<T>(backingObjs);
+            IDynParam idyp = _dynParams
+                .Find(x => 
+                    x.Name
+                        .Equals(parameterName, StringComparison.CurrentCultureIgnoreCase));
+
+            return idyp.GetBackingItems().Cast<T>().ToArray();
         }
 
         #endregion
@@ -171,14 +174,15 @@ namespace MG.Dynamic
         /// </summary>
         /// <param name="parameterName">The name of the parameter to retrieve the chosen values from.</param>
         /// <exception cref="ArgumentNullException"/>
-        public object[] GetParameterValues(string parameterName)
+        public IEnumerable<object> GetParameterValues(string parameterName)
         {
-            object[] vals = null;
-            if (this.ParameterHasValue(parameterName))
+            if (this.ParameterHasValue(parameterName) && base[parameterName].Value is IEnumerable ienum)
             {
-                vals = base[parameterName].Value as object[];
+                foreach (object o in ienum)
+                {
+                    yield return o;
+                }
             }
-            return vals;
         }
 
         #endregion
@@ -213,24 +217,20 @@ namespace MG.Dynamic
         /// <param name="parameterName">The name of the parameter to retrieve the chosen values from.</param>
         /// <exception cref="ArgumentNullException"/>
         /// <exception cref="InvalidCastException"/>
-        public T[] GetParameterValues<T>(string parameterName) where T : class
+        public IEnumerable<T> GetParameterValues<T>(string parameterName) where T : class
         {
-            T[] tArr = null;
             if (this.ParameterHasValue(parameterName))
             {
-                object[] objArr = this.GetParameterValues(parameterName);
-                tArr = new T[objArr.Length];
-                for (int i = 0; i < objArr.Length; i++)
+                IEnumerable<object> objArr = this.GetParameterValues(parameterName);
+                foreach (object o in objArr)
                 {
-                    object oVal = objArr[i];
-                    if (oVal is T tObj)
-                        tArr[i] = tObj;
+                    if (o is T tO)
+                        yield return tO;
 
                     else
-                        tArr[i] = this.Cast<T>(oVal);
+                        yield return this.Cast<T>(o);
                 }
             }
-            return tArr;
         }
 
         #endregion
@@ -343,7 +343,7 @@ namespace MG.Dynamic
 
                 foreach (DynamicParameter<T> dp in casted)
                 {
-                    object[] oVal = this.GetParameterValues(parameterName);
+                    IEnumerable<object> oVal = this.GetParameterValues(parameterName);
                     foreach (T tVal in dp.GetItemFromChosenValues(oVal))
                     {
                         yield return tVal;
