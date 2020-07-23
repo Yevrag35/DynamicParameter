@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Management.Automation;
-using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace MG.Dynamic
+namespace MG.Dynamic.Parameter
 {
-    /// <summary>
-    /// Defines properties and methods to store underlying values that 
-    /// create a dynamic 'ValidateSet' off of one of its properties to be used within a <see cref="DynamicLibrary"/>.
-    /// </summary>
-    public interface IDynParam
+    public interface IRuntimeParameter
     {
         /// <summary>
         /// A collection of alternative names for the parameter.
@@ -49,13 +44,15 @@ namespace MG.Dynamic
         string HelpMessage { get; set; }
 
         /// <summary>
-        /// Gets and sets the base name of the resource for a help message. 
-        /// When this field is speicifed, HelpMessageResourceId must also be specified.
+        /// The base name of the resource for a help message.
         /// </summary>
+        /// <remarks>
+        ///     When this field is speicifed, HelpMessageResourceId must also be specified.
+        /// </remarks>
         string HelpMessageBaseName { get; set; }
 
         /// <summary>
-        /// Gets and sets the Id of the resource for a help message. 
+        /// The ID of the resource for a help message. 
         /// When this field is speicifed, HelpMessageBaseName must also be specified.
         /// </summary>
         string HelpMessageResourceId { get; set; }
@@ -70,13 +67,15 @@ namespace MG.Dynamic
         string Key { get; set; }
 
         /// <summary>
-        /// Gets and sets a flag specifying if this parameter is Mandatory. 
-        /// When it is not specified, false is assumed and the parameter is considered optional.
+        /// A flag specifying if this parameter is Mandatory.
         /// </summary>
+        /// <remarks>
+        ///     When not specified, <see langword="false"/> is assumed and the parameter is considered optional.
+        /// </remarks>
         bool Mandatory { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the parameter.
+        /// The name of the parameter.
         /// </summary>
         string Name { get; set; }
 
@@ -160,22 +159,5 @@ namespace MG.Dynamic
         /// Converts the inherited class into its RuntimeDefinedParameter equivalent.
         /// </summary>
         RuntimeDefinedParameter AsRuntimeParameter();
-
-        /// <summary>
-        /// Finds the underlying object that matches the designated property used to build a ValidateSet attribute.
-        /// </summary>
-        /// <param name="chosenValue">The value selected after IDynamicParameters has been processed.</param>
-        object GetItemFromChosenValue(object chosenValue);
-
-        /// <summary>
-        /// Finds the underlying objects that match the designated property used to build a ValidateSet attribute.
-        /// </summary>
-        /// <param name="chosenValues">The values selected after IDynamicParameters has been processed.</param>
-        IEnumerable<object> GetItemsFromChosenValues(IEnumerable<object> chosenValues);
-
-        /// <summary>
-        /// Retrieves all the underlying objects that were used to build the ValidateSet.
-        /// </summary>
-        object[] GetBackingItems();
     }
 }

@@ -21,12 +21,12 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<Compile Include="..\MG.Dynamic-DotNet\**\*.cs"
-				 Exclude="..\MG.Dynamic-DotNet\obj\**\*.cs;..\MG.Dynamic-DotNet\Old\**\*.cs;..\MG.Dynamic-DotNet\TestEnv\**\*.cs;..\MG.Dynamic-DotNet\Testing\**\*.cs"/>
+		<Compile Include="..\MG.Dynamic-DotNet\**\*.cs" Exclude="..\MG.Dynamic-DotNet\obj\**\*.cs;..\MG.Dynamic-DotNet\Old\**\*.cs;..\MG.Dynamic-DotNet\TestEnv\**\*.cs;..\MG.Dynamic-DotNet\Testing\**\*.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" />
+	  <PackageReference Include="System.ValueTuple" Version="4.5.0" />
 	</ItemGroup>
 
 </Project>

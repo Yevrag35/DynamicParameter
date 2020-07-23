@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using System.Management.Automation;
 using System.Reflection;
 
-namespace MG.Dynamic
+namespace MG.Dynamic.Parameter
 {
     /// <summary>
     /// A class to be used when constructing a <see cref="DynamicLibrary"/> or <see cref="RuntimeDefinedParameterDictionary"/>
@@ -35,6 +35,7 @@ namespace MG.Dynamic
         /// Declares alternative names for the parameter.
         /// </summary>
         public List<string> Aliases { get; } = new List<string>();
+        IList<string> IDynParam.Aliases => this.Aliases;
 
         /// <summary>
         /// Declares an empty collection can be used as an argument to a mandatory collection parameter.
@@ -81,6 +82,8 @@ namespace MG.Dynamic
         /// </summary>
         public string HelpMessageResourceId { get; set; }
 
+        public string Key { get; set; }
+
         /// <summary>
         /// Gets and sets a flag specifying if this parameter is Mandatory. 
         /// When it is not specified, false is assumed and the parameter is considered optional.
@@ -116,18 +119,18 @@ namespace MG.Dynamic
         /// <summary>
         /// Declares that this parameter argument count must be in the specified range specified by the key (MinCount) and value (MaxCount).
         /// </summary>
-        public KeyValuePair<int, int>? ValidateCount { get; set; }
+        public (int, int)? ValidateCount { get; set; }
 
         /// <summary>
         /// Declares that the length of each parameter argument's Length must fall in the range specified by the key (MinLength) and value (MaxLength).
         /// </summary>
-        public KeyValuePair<int, int>? ValidateLength { get; set; }
+        public (int, int)? ValidateLength { get; set; }
 
         /// <summary>
         /// Declares a collection of strings that each parameter argument is present in this specific collection.
         /// </summary>
         public HashSet<string> ValidatedItems => _items;
-        IEnumerable<string> IDynParam.ValidatedItems => _items;
+        ICollection<string> IDynParam.ValidatedItems => _items;
 
         /// <summary>
         /// Validates that the parameters's argument is not null.
@@ -147,7 +150,7 @@ namespace MG.Dynamic
         /// <summary>
         /// Declares that each parameter argument must fall in the range specified by the key (MinRange) and value (MaxRange).
         /// </summary>
-        public KeyValuePair<int, int>? ValidateRange { get; set; }
+        public (object, object)? ValidateRange { get; set; }
 
         /// <summary>
         /// Gets and sets a flag that specifies that this parameter can take values from the incoming pipeline object. 
@@ -342,13 +345,13 @@ namespace MG.Dynamic
                 attCol.Add(new ValidateNotNullOrEmptyAttribute());
 
             if (this.ValidateCount.HasValue)
-                attCol.Add(new ValidateCountAttribute(this.ValidateCount.Value.Key, this.ValidateCount.Value.Value));
+                attCol.Add(new ValidateCountAttribute(this.ValidateCount.Value.Item1, this.ValidateCount.Value.Item2));
 
             if (this.ValidateLength.HasValue)
-                attCol.Add(new ValidateLengthAttribute(this.ValidateLength.Value.Key, this.ValidateLength.Value.Value));
+                attCol.Add(new ValidateLengthAttribute(this.ValidateLength.Value.Item1, this.ValidateLength.Value.Item2));
 
             if (this.ValidateRange.HasValue)
-                attCol.Add(new ValidateRangeAttribute(this.ValidateRange.Value.Key, this.ValidateRange.Value.Value));
+                attCol.Add(new ValidateRangeAttribute(this.ValidateRange.Value.Item1, this.ValidateRange.Value.Item2));
 
             if (_items != null && _items.Count > 0)
                 attCol.Add(new ValidateSetAttribute(_items.ToArray()));
