@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -21,7 +21,8 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<Compile Include="..\MG.Dynamic-DotNet\*.cs" />
+		<Compile Include="..\MG.Dynamic-DotNet\**\*.cs"
+				 Exclude="..\MG.Dynamic-DotNet\obj\**\*.cs;..\MG.Dynamic-DotNet\Old\**\*.cs;..\MG.Dynamic-DotNet\TestEnv\**\*.cs;..\MG.Dynamic-DotNet\Testing\**\*.cs"/>
 	</ItemGroup>
 
 	<ItemGroup>

@@ -59,11 +59,11 @@
     <None Include="packages.config" />
     <None Include="Old\Parameter.cs" />
     <None Include="Old\Interfaces.cs" />
-    <Compile Include="DynamicLibrary.cs" />
-    <Compile Include="DynamicParameter.cs" />
+    <Compile Include="Library\DynamicLibrary.cs" />
+    <Compile Include="Parameter\DynamicParameter.cs" />
     <None Include="Testing\IDynParam-Generic.cs" />
-    <Compile Include="Exceptions.cs" />
-    <Compile Include="IDynParam.cs" />
+    <Compile Include="Exceptions\Exceptions.cs" />
+    <Compile Include="Parameter\IDynParam.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="TestEnv\TestClass.cs" />
   </ItemGroup>
