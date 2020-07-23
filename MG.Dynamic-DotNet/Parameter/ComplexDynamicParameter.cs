@@ -19,6 +19,7 @@ namespace MG.Dynamic.Parameter
 
         public ComplexDynamicParameter(string name) => base.Name = name;
 
+        ICollection<T1> IComplexDynamicParameter<T1, T2>.GetBackingItems() => base.BackingItems;
         public T1 GetPropertyFromValue(T2 chosenValue)
         {
             T1 ret = default;

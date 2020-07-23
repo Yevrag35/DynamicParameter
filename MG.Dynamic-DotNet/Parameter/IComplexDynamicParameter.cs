@@ -6,7 +6,7 @@ namespace MG.Dynamic.Parameter
 {
     public interface IComplexDynamicParameter<T1, T2> : IRuntimeParameter where T2 : IConvertible
     {
-        T1[] GetBackingItems();
+        ICollection<T1> GetBackingItems();
         T1 GetPropertyFromValue(T2 chosenValue);
         IEnumerable<T1> GetPropertiesFromValue(T2 chosenValue);
         IEnumerable<T1> GetPropertiesFromValues(IEnumerable<T2> chosenValues);

@@ -29,6 +29,7 @@ namespace MG.Dynamic.Parameter
         /// <summary>
         /// Retrieves all the underlying objects that were used to build the ValidateSet.
         /// </summary>
-        object[] GetBackingItems();
+        ICollection GetBackingItems();
+        //object[] GetBackingItems();
     }
 }

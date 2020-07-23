@@ -55,7 +55,7 @@ namespace MG.Dynamic.Tests
             RuntimeDefinedParameter rtParam = complex.AsRuntimeDefinedParameter();
             Assert.IsNotNull(rtParam);
             Assert.AreEqual("Employee", rtParam.Name);
-            Assert.AreEqual(3, rtParam.Attributes.Count);
+            Assert.AreEqual(2, rtParam.Attributes.Count);
         }
 
         [TestMethod]

@@ -183,21 +183,16 @@ namespace MG.Dynamic.Parameter
         /// <summary>
         /// Retrieves all the underlying objects that were used to build the ValidateSet.
         /// </summary>
-        object[] IDynParam.GetBackingItems()
+        ICollection IDynParam.GetBackingItems() => this.BackingItems;
         {
-            var objArr = new object[this.BackingItems.Count];
-            for (int i = 0; i < this.BackingItems.Count; i++)
-            {
-                objArr[i] = this.BackingItems[i];
-            }
-            return objArr;
+            //var objArr = new object[this.BackingItems.Count];
+            //for (int i = 0; i < this.BackingItems.Count; i++)
+            //{
+            //    objArr[i] = this.BackingItems[i];
+            //}
+            //return objArr;
         }
-        public T[] GetBackingItems()
-        {
-            var tArr = new T[this.BackingItems.Count];
-            this.BackingItems.CopyTo(tArr, 0);
-            return tArr;
-        }
+        ICollection<T> IDynParam<T>.GetBackingItems() => this.BackingItems;
 
         /// <summary>
         /// Finds the underlying object that matches the designated property used to build a ValidateSet attribute.
