@@ -19,25 +19,7 @@ namespace MG.Dynamic.Testing
 
         public object GetDynamicParameters()
         {
-            if (dict == null)
-            {
-                if (_dyn == null)
-                {
-                    _dyn = new ParameterDefiner(pName, typeof(string[]))
-                    {
-                        Mandatory = true,
-                        Position = 0
-                    };
-                    _dyn.Aliases.AddRange(new string[2] { "f", "file" });
-                    _dyn.AllowEmptyString = true;
 
-                    string curDir = Environment.CurrentDirectory;
-                    string[] allFiles = Directory.GetFiles(curDir);
-                    _dyn.ValidatedItems.AddRange(allFiles);
-                }
-                dict = _dyn.NewDictionary();
-            }
-            return dict;
         }
 
         protected override void BeginProcessing() => base.BeginProcessing();

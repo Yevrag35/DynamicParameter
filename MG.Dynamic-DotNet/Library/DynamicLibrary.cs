@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MG.Dynamic.Parameter;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -6,21 +7,21 @@ using System.Linq;
 using System.Management.Automation;
 using System.Reflection;
 
-namespace MG.Dynamic
+namespace MG.Dynamic.Library
 {
     /// <summary>
     /// Represents a collection of <see cref="RuntimeDefinedParameter"/> or <see cref="IDynParam"/> classes that are keyed on
     /// the name of the parameter.  It also has the ability to match chosen ValidateSet values to the parameters' underlying 
     /// objects.
     /// </summary>
-    public class DynamicLibrary : RuntimeDefinedParameterDictionary, IDisposable
+    public class DynamicLibrary : RuntimeDefinedParameterDictionary, IDisposable, IDynamicLibrary
     {
         #region FIELDS/CONSTANTS
 
         private bool disposed;
         private readonly List<IDynParam> _dynParams;
-        private const BindingFlags NONPUB_INST = BindingFlags.Instance | BindingFlags.NonPublic;
-        private const BindingFlags PUB_INST = BindingFlags.Public | BindingFlags.Instance;
+        //private const BindingFlags NONPUB_INST = BindingFlags.Instance | BindingFlags.NonPublic;
+        //private const BindingFlags PUB_INST = BindingFlags.Public | BindingFlags.Instance;
 
         #endregion
 
@@ -35,6 +36,8 @@ namespace MG.Dynamic
 
         #region METHODS
 
+        RuntimeDefinedParameterDictionary IRuntimeLibrary.AsParameterDictionary() => this;
+
         #region ADDITIVE
 
         /// <summary>
@@ -46,7 +49,7 @@ namespace MG.Dynamic
         public void Add(IDynParam dynamicParameter)
         {
             if (!base.ContainsKey(dynamicParameter.Name))
-                base.Add(dynamicParameter.Name, dynamicParameter.AsRuntimeParameter());
+                base.Add(dynamicParameter.Name, dynamicParameter.AsRuntimeDefinedParameter());
 
             _dynParams.Add(dynamicParameter);
         }
@@ -342,7 +345,7 @@ namespace MG.Dynamic
                 foreach (DynamicParameter<T> dp in casted)
                 {
                     IEnumerable<object> oVal = this.GetParameterValues(parameterName);
-                    foreach (T tVal in dp.GetItemFromChosenValues(oVal))
+                    foreach (T tVal in dp.GetItemsFromChosenValues(oVal))
                     {
                         yield return tVal;
                     }

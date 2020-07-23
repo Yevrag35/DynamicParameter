@@ -15,7 +15,7 @@ namespace MG.Dynamic.Parameter
     /// 'ValidateSet' off of one of its properties.  The generic type is of the underlying items type.
     /// </summary>
     /// <typeparam name="T">The type of the underlying items for the ValidateSet.</typeparam>
-    public class DynamicParameter<T> : IDynParam
+    public class DynamicParameter<T> : RuntimeParameter, IDynParam<T>, IDynParam
     {
         #region FIELDS/CONSTANTS
         private const BindingFlags PUB_INST = BindingFlags.Public | BindingFlags.Instance;
@@ -31,146 +31,13 @@ namespace MG.Dynamic.Parameter
         #endregion
 
         #region PROPERTIES
-        /// <summary>
-        /// Declares alternative names for the parameter.
-        /// </summary>
-        public List<string> Aliases { get; } = new List<string>();
-        IList<string> IDynParam.Aliases => this.Aliases;
 
-        /// <summary>
-        /// Declares an empty collection can be used as an argument to a mandatory collection parameter.
-        /// </summary>
-        public bool AllowEmptyCollection { get; set; }
-
-        /// <summary>
-        /// Declares an empty string can be used as an argument to a mandatory string parameter.
-        /// </summary>
-        public bool AllowEmptyString { get; set; }
-
-        /// <summary>
-        /// Declares a NULL can be used as an argument to a mandatory parameter.
-        /// </summary>
-        public bool AllowNull { get; set; }
-
-
-        public List<T> BackingItems { get; } = new List<T>();
+        public IList<T> BackingItems { get; protected set; } = new List<T>();
 
         /// <summary>
         /// The underlying type of the backend item collection that signifies this class's generic constraint.
         /// </summary>
-        Type IDynParam.BackingItemType => typeof(T);
-
-        /// <summary>
-        /// Declares that the parameter will be hidden from the console unless typed explicitly.
-        /// </summary>
-        public bool DontShow { get; set; }
-
-        /// <summary>
-        /// Gets and sets a short description for this parameter, suitable for presentation as a tooltip.
-        /// </summary>
-        public string HelpMessage { get; set; }
-
-        /// <summary>
-        /// Gets and sets the base name of the resource for a help message. 
-        /// When this field is speicifed, HelpMessageResourceId must also be specified.
-        /// </summary>
-        public string HelpMessageBaseName { get; set; }
-
-        /// <summary>
-        /// Gets and sets the Id of the resource for a help message. 
-        /// When this field is speicifed, HelpMessageBaseName must also be specified.
-        /// </summary>
-        public string HelpMessageResourceId { get; set; }
-
-        public string Key { get; set; }
-
-        /// <summary>
-        /// Gets and sets a flag specifying if this parameter is Mandatory. 
-        /// When it is not specified, false is assumed and the parameter is considered optional.
-        /// </summary>
-        public bool Mandatory { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the parameter.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Gets and sets the name of the parameter set this parameter belongs to. 
-        /// When it is not specified, ParameterAttribute.AllParameterSets is assumed.
-        /// </summary>
-        public string ParameterSetName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the type of the parameter.
-        /// </summary>
-        public Type ParameterType { get; set; }
-
-        /// <summary>
-        /// Gets and sets the parameter position. If not set, the parameter is named.
-        /// </summary>
-        public int? Position { get; set; }
-
-        /// <summary>
-        /// Declares that this parameter supports wildcards.
-        /// </summary>
-        public bool SupportsWildcards { get; set; }
-
-        /// <summary>
-        /// Declares that this parameter argument count must be in the specified range specified by the key (MinCount) and value (MaxCount).
-        /// </summary>
-        public (int, int)? ValidateCount { get; set; }
-
-        /// <summary>
-        /// Declares that the length of each parameter argument's Length must fall in the range specified by the key (MinLength) and value (MaxLength).
-        /// </summary>
-        public (int, int)? ValidateLength { get; set; }
-
-        /// <summary>
-        /// Declares a collection of strings that each parameter argument is present in this specific collection.
-        /// </summary>
-        public HashSet<string> ValidatedItems => _items;
-        ICollection<string> IDynParam.ValidatedItems => _items;
-
-        /// <summary>
-        /// Validates that the parameters's argument is not null.
-        /// </summary>
-        public bool ValidateNotNull { get; set; }
-
-        /// <summary>
-        /// Validates that the parameters's argument is not null, is not an empty string, and is not an empty collection.
-        /// </summary>
-        public bool ValidateNotNullOrEmpty { get; set; }
-
-        /// <summary>
-        /// Validates that each parameter argument matches specified the RegexPattern.
-        /// </summary>
-        public string ValidatePattern { get; set; }
-
-        /// <summary>
-        /// Declares that each parameter argument must fall in the range specified by the key (MinRange) and value (MaxRange).
-        /// </summary>
-        public (object, object)? ValidateRange { get; set; }
-
-        /// <summary>
-        /// Gets and sets a flag that specifies that this parameter can take values from the incoming pipeline object. 
-        /// When it is not specified, false is assumed.
-        /// </summary>
-        public bool ValueFromPipeline { get; set; }
-
-        /// <summary>
-        /// Gets and sets a flag that specifies that this parameter can take values from
-        /// a property in the incoming pipeline object with the same name as the parameter.
-        /// When it is not specified, false is assumed.
-        /// </summary>
-        public bool ValueFromPipelineByPropertyName { get; set; }
-
-        /// <summary>
-        /// Gets and sets a flag that specifies that the remaining command line parameters
-        /// should be associated with this parameter in the form of an array. When it is
-        /// not specified, false is assumed.
-        /// </summary>
-        public bool ValueFromRemainingArguments { get; set; }
+        public Type BackingItemType => typeof(T);
 
         #endregion
 
@@ -314,54 +181,6 @@ namespace MG.Dynamic.Parameter
         #region METHODS
 
         /// <summary>
-        /// Converts the inherited class into its RuntimeDefinedParameter equivalent.
-        /// </summary>
-        public RuntimeDefinedParameter AsRuntimeParameter()
-        {
-            if (string.IsNullOrEmpty(this.Name))
-                throw new InvalidCastException("To make a RuntimeDefinedParameter, a parameter name needs to be set.");
-
-            var attCol = new List<Attribute>();
-
-            if (this.Aliases.Count > 0)
-                attCol.Add(new AliasAttribute(this.Aliases.ToArray()));
-            
-            if (this.AllowEmptyCollection)
-                attCol.Add(new AllowEmptyCollectionAttribute());
-
-            if (this.AllowEmptyString)
-                attCol.Add(new AllowEmptyStringAttribute());
-
-            if (this.AllowNull)
-                attCol.Add(new AllowNullAttribute());
-
-            if (this.SupportsWildcards)
-                attCol.Add(new SupportsWildcardsAttribute());
-
-            if (this.ValidateNotNull)
-                attCol.Add(new ValidateNotNullAttribute());
-
-            if (this.ValidateNotNullOrEmpty)
-                attCol.Add(new ValidateNotNullOrEmptyAttribute());
-
-            if (this.ValidateCount.HasValue)
-                attCol.Add(new ValidateCountAttribute(this.ValidateCount.Value.Item1, this.ValidateCount.Value.Item2));
-
-            if (this.ValidateLength.HasValue)
-                attCol.Add(new ValidateLengthAttribute(this.ValidateLength.Value.Item1, this.ValidateLength.Value.Item2));
-
-            if (this.ValidateRange.HasValue)
-                attCol.Add(new ValidateRangeAttribute(this.ValidateRange.Value.Item1, this.ValidateRange.Value.Item2));
-
-            if (_items != null && _items.Count > 0)
-                attCol.Add(new ValidateSetAttribute(_items.ToArray()));
-
-            attCol.Add(this.MakeParameterAttribute());
-
-            return new RuntimeDefinedParameter(this.Name, this.ParameterType, new Collection<Attribute>(attCol));
-        }
-
-        /// <summary>
         /// Retrieves all the underlying objects that were used to build the ValidateSet.
         /// </summary>
         object[] IDynParam.GetBackingItems()
@@ -376,7 +195,7 @@ namespace MG.Dynamic.Parameter
         public T[] GetBackingItems()
         {
             var tArr = new T[this.BackingItems.Count];
-            this.BackingItems.CopyTo(tArr);
+            this.BackingItems.CopyTo(tArr, 0);
             return tArr;
         }
 
@@ -430,7 +249,6 @@ namespace MG.Dynamic.Parameter
         /// casts the result as the class's generic type.
         /// </summary>
         /// <param name="chosenValue">The value selected after IDynamicParameters has been processed.</param>
-        /// <returns></returns>
         public T GetItemFromChosenValue(object chosenValue)
         {
             T retVal = default;
@@ -446,52 +264,10 @@ namespace MG.Dynamic.Parameter
             return retVal;
         }
 
-        public IEnumerable<T> GetItemFromChosenValues(IEnumerable<object> chosenValues)
+        public IEnumerable<T> GetItemsFromChosenValues(IEnumerable<object> chosenValues)
         {
-            return this.BackingItems.FindAll(x => chosenValues.Any(o => Convert.ToString(_propertyFunc(x)).Equals(o)));
+            return this.BackingItems.Where(x => chosenValues.Any(o => Convert.ToString(_propertyFunc(x)).Equals(o)));
         }
-
-        #region PRIVATE METHODS
-        //private List<G> Cast<G>(dynamic[] os)
-        //{
-        //    var gList = new List<G>(os.Length);
-        //    for (int i = 0; i < os.Length; i++)
-        //    {
-        //        dynamic o = os[i];
-        //        gList.Add((G)o);
-        //    }
-        //    return gList;
-        //}
-
-        private ParameterAttribute MakeParameterAttribute()
-        {
-            var pAtt = new ParameterAttribute
-            {
-                DontShow = this.DontShow,
-                Mandatory = this.Mandatory,
-                ValueFromPipeline = this.ValueFromPipeline,
-                ValueFromPipelineByPropertyName = this.ValueFromPipelineByPropertyName,
-                ValueFromRemainingArguments = this.ValueFromRemainingArguments
-            };
-            if (!string.IsNullOrEmpty(this.HelpMessage))
-                pAtt.HelpMessage = this.HelpMessage;
-
-            if (!string.IsNullOrEmpty(this.HelpMessageBaseName))
-                pAtt.HelpMessageBaseName = this.HelpMessageBaseName;
-
-            if (!string.IsNullOrEmpty(this.HelpMessageResourceId))
-                pAtt.HelpMessageResourceId = this.HelpMessageResourceId;
-
-            if (!string.IsNullOrEmpty(this.ParameterSetName))
-                pAtt.ParameterSetName = this.ParameterSetName;
-
-            if (this.Position.HasValue)
-                pAtt.Position = this.Position.Value;
-
-            return pAtt;
-        }
-
-        #endregion
 
         #endregion
     }

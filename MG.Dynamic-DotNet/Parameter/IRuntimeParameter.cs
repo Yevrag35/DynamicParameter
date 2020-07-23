@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Management.Automation;
 
 namespace MG.Dynamic.Parameter
 {
+    /// <summary>
+    /// An interface exposing properties and methods for constructing a <see cref="RuntimeDefinedParameter"/>.
+    /// </summary>
     public interface IRuntimeParameter
     {
         /// <summary>
@@ -27,11 +28,6 @@ namespace MG.Dynamic.Parameter
         /// Declares a NULL can be used as an argument to a mandatory parameter.
         /// </summary>
         bool AllowNull { get; set; }
-
-        /// <summary>
-        /// The underlying type of the backend item collection that signifies this class's generic constraint.
-        /// </summary>
-        Type BackingItemType { get; }
 
         /// <summary>
         /// Declares that the parameter will be hidden from the console unless typed explicitly.
@@ -158,6 +154,8 @@ namespace MG.Dynamic.Parameter
         /// <summary>
         /// Converts the inherited class into its RuntimeDefinedParameter equivalent.
         /// </summary>
-        RuntimeDefinedParameter AsRuntimeParameter();
+        RuntimeDefinedParameter AsRuntimeDefinedParameter();
+
+        ParameterAttribute MakeParameterAttribute();
     }
 }

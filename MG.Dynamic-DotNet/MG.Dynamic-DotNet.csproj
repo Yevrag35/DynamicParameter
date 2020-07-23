@@ -63,8 +63,12 @@
     <None Include="Old\Parameter.cs" />
     <None Include="Old\Interfaces.cs" />
     <Compile Include="Library\DynamicLibrary.cs" />
+    <Compile Include="Library\IDynamicLibrary.cs" />
+    <Compile Include="Library\IRuntimeLibrary.cs" />
+    <Compile Include="Parameter\ComplexDynamicParameter.cs" />
     <Compile Include="Parameter\DynamicParameter.cs" />
-    <None Include="Testing\IDynParam-Generic.cs" />
+    <Compile Include="Parameter\IComplexDynamicParameter.cs" />
+    <Compile Include="Parameter\IDynParam-Generic.cs" />
     <Compile Include="Exceptions\Exceptions.cs" />
     <Compile Include="Parameter\IDynParam.cs" />
     <Compile Include="Parameter\IRuntimeParameter.cs" />
@@ -72,7 +76,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="TestEnv\TestClass.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Testing\" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="TestEnv\TestDynModule.psd1" />
     <None Include="TestEnv\TestDynModule.psm1" />
