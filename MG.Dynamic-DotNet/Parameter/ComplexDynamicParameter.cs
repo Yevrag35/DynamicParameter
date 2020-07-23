@@ -8,7 +8,14 @@ namespace MG.Dynamic.Parameter
 {
     public class ComplexDynamicParameter<T1, T2> : DynamicParameter<T1>, IComplexDynamicParameter<T1, T2> where T2 : IConvertible
     {
+        private Type _paramType = typeof(T2);
+
         public Func<T1, T2> PropertyFunction { get; set; }
+        public override Type ParameterType
+        {
+            get => _paramType;
+            set => _paramType = value;
+        }
 
         public ComplexDynamicParameter(string name) => base.Name = name;
 

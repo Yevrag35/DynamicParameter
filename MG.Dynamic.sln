@@ -16,7 +16,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{510F
 		MG.NuGet.Nuspec.dll = MG.NuGet.Nuspec.dll
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MG.Dynamic-Standard", "MG.Dynamic-Standard\MG.Dynamic-Standard.csproj", "{E4A87DAF-F559-41B6-A5C9-36860AB88C3D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MG.Dynamic-Standard", "MG.Dynamic-Standard\MG.Dynamic-Standard.csproj", "{E4A87DAF-F559-41B6-A5C9-36860AB88C3D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MG.Dynamic.Tests_Old", "MG.Dynamic.Tests_Old\MG.Dynamic.Tests_Old.csproj", "{6BA79F2A-C5A5-4BEE-909B-3432201E3901}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MG.Dynamic.Tests", "MG.Dynamic.Tests\MG.Dynamic.Tests.csproj", "{88C8CDBD-160D-4DC7-A464-53196AE5C372}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +40,14 @@ Global
 		{E4A87DAF-F559-41B6-A5C9-36860AB88C3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4A87DAF-F559-41B6-A5C9-36860AB88C3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4A87DAF-F559-41B6-A5C9-36860AB88C3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BA79F2A-C5A5-4BEE-909B-3432201E3901}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BA79F2A-C5A5-4BEE-909B-3432201E3901}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BA79F2A-C5A5-4BEE-909B-3432201E3901}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BA79F2A-C5A5-4BEE-909B-3432201E3901}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88C8CDBD-160D-4DC7-A464-53196AE5C372}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88C8CDBD-160D-4DC7-A464-53196AE5C372}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88C8CDBD-160D-4DC7-A464-53196AE5C372}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88C8CDBD-160D-4DC7-A464-53196AE5C372}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

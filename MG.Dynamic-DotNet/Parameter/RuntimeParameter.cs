@@ -27,7 +27,7 @@ namespace MG.Dynamic.Parameter
         public bool Mandatory { get; set; }
         public string Name { get; set; }
         public string ParameterSetName { get; set; }
-        public Type ParameterType { get; set; }
+        public virtual Type ParameterType { get; set; }
         public int? Position { get; set; }
         public bool SupportsWildcards { get; set; }
         public (int, int)? ValidateCount { get; set; }

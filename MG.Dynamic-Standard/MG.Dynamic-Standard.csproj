@@ -21,7 +21,8 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<Compile Include="..\MG.Dynamic-DotNet\**\*.cs" Exclude="..\MG.Dynamic-DotNet\obj\**\*.cs;..\MG.Dynamic-DotNet\Old\**\*.cs;..\MG.Dynamic-DotNet\TestEnv\**\*.cs;..\MG.Dynamic-DotNet\Testing\**\*.cs" />
+		<Compile Include="..\MG.Dynamic-DotNet\**\*.cs" 
+				 Exclude="..\MG.Dynamic-DotNet\obj\**\*.cs;..\MG.Dynamic-DotNet\Properties\AssemblyInfo.cs;..\MG.Dynamic-DotNet\Old\**\*.cs;..\MG.Dynamic-DotNet\TestEnv\**\*.cs;..\MG.Dynamic-DotNet\Testing\**\*.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
