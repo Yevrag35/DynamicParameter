@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Management.Automation;
 
-namespace MG.Dynamic.Parameter
+namespace MG.Dynamic.Parameter.Generic
 {
     /// <summary>
     /// Defines properties and methods to store underlying values that 

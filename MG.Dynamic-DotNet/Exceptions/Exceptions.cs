@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+using MG.Dynamic.Parameter;
 
 namespace MG.Dynamic
 {
@@ -11,5 +9,18 @@ namespace MG.Dynamic
 
         public LibraryContainsNoIDynsException()
             : base(DEF_MSG) { }
+    }
+
+    public class InvalidKeyException : InvalidOperationException
+    {
+        private const string DEF_MSG = "Converting into a RuntimeDefinedParameterDictionary failed because a parameter's Key was not specified and we've been told not to use the Name.";
+
+        public IRuntimeParameter Parameter { get; }
+
+        public InvalidKeyException(IRuntimeParameter parameter)
+            : base(DEF_MSG)
+        {
+            this.Parameter = parameter;
+        }
     }
 }

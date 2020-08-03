@@ -58,13 +58,13 @@
     <Content Include="Debug.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Old\DynLibrary.cs.old" />
     <None Include="packages.config" />
-    <None Include="Old\Parameter.cs" />
-    <None Include="Old\Interfaces.cs" />
+    <Compile Include="Library\Generic\ComplexDynamicLibrary-Generic.cs" />
     <Compile Include="Library\DynamicLibrary.cs" />
+    <Compile Include="Library\Generic\IComplexDynamicLibrary.cs" />
     <Compile Include="Library\IDynamicLibrary.cs" />
     <Compile Include="Library\IRuntimeLibrary.cs" />
+    <Compile Include="Library\RuntimeLibrary.cs" />
     <Compile Include="Parameter\ComplexDynamicParameter.cs" />
     <Compile Include="Parameter\DynamicParameter.cs" />
     <Compile Include="Parameter\IComplexDynamicParameter.cs" />
@@ -74,7 +74,7 @@
     <Compile Include="Parameter\IRuntimeParameter.cs" />
     <Compile Include="Parameter\RuntimeParameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestEnv\TestClass.cs" />
+    <None Include="TestEnv\TestClass.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

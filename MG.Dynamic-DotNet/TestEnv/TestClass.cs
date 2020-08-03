@@ -1,5 +1,7 @@
 ﻿using MG.Dynamic.Parameter;
+using MG.Dynamic.Parameter.Generic;
 using MG.Dynamic.Library;
+using MG.Dynamic.Library.Generic;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,7 +19,7 @@ namespace MG.Dynamic.Testing
         [Parameter(Mandatory = false)]
         public string TestString { get; set; }
 
-        public ComplexDynamicParameter<Employee, string> Employee { get; private set; }
+        public ComplexDynamicParameter<string, Employee> Employee { get; private set; }
 
 
         private RuntimeDefinedParameterDictionary dict;
@@ -30,7 +32,7 @@ namespace MG.Dynamic.Testing
                 Id = 72625635,
                 Name = "Jim Jones"
             };
-            this.Employee = new ComplexDynamicParameter<Employee, string>("Employee")
+            this.Employee = new ComplexDynamicParameter<string, Employee>("Employee")
             {
                 Mandatory = true,
                 Position = 0,

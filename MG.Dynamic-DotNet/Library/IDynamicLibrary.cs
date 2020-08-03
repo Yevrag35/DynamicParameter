@@ -1,12 +1,11 @@
-﻿using System;
+﻿using MG.Dynamic.Parameter;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Management.Automation;
 
 namespace MG.Dynamic.Library
 {
-    public interface IDynamicLibrary : IRuntimeLibrary
+    public interface IDynamicLibrary : IDisposable, IRuntimeLibrary, IEnumerable<IDynParam>
     {
 
     }

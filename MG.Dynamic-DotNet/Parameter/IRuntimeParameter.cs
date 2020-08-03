@@ -155,7 +155,7 @@ namespace MG.Dynamic.Parameter
         /// Converts the inherited class into its RuntimeDefinedParameter equivalent.
         /// </summary>
         RuntimeDefinedParameter AsRuntimeDefinedParameter();
-
+        string GetKey(bool nameIfEmpty);
         ParameterAttribute MakeParameterAttribute();
     }
 }

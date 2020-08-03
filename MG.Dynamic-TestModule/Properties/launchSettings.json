@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "MG.Dynamic-TestModule": {
+      "commandName": "Executable"
+    }
+  }
+}

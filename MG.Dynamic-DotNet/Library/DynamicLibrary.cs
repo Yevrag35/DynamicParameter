@@ -1,4 +1,5 @@
 ﻿using MG.Dynamic.Parameter;
+using MG.Dynamic.Parameter.Generic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -37,6 +38,9 @@ namespace MG.Dynamic.Library
         #region METHODS
 
         RuntimeDefinedParameterDictionary IRuntimeLibrary.AsParameterDictionary() => this;
+        RuntimeDefinedParameterDictionary IRuntimeLibrary.AsParameterDictionary(bool useNameIfEmptyKey) => this;
+        public IList<string> GetKeys() => _dynParams.Select(x => x.GetKey(true)).ToList();
+        public IList<string> GetKeys(bool useNameIfEmptyKey) => _dynParams.Select(x => x.GetKey(useNameIfEmptyKey)).ToList();
 
         #region ADDITIVE
 
@@ -237,6 +241,18 @@ namespace MG.Dynamic.Library
         }
 
         #endregion
+
+        #endregion
+
+        #region ENUEMRATORS
+        IEnumerator<IDynParam> IEnumerable<IDynParam>.GetEnumerator() => _dynParams.GetEnumerator();
+        IEnumerator<IRuntimeParameter> IEnumerable<IRuntimeParameter>.GetEnumerator()
+        {
+            foreach (IRuntimeParameter irp in _dynParams)
+            {
+                yield return irp;
+            }
+        }
 
         #endregion
 

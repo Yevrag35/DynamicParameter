@@ -11,6 +11,7 @@ namespace MG.Dynamic.Parameter
     {
         #region FIELDS/CONSTANTS
         private const BindingFlags PUB_INST = BindingFlags.Public | BindingFlags.Instance;
+        private string _key;
 
         #endregion
 
@@ -23,7 +24,8 @@ namespace MG.Dynamic.Parameter
         public string HelpMessage { get; set; }
         public string HelpMessageBaseName { get; set; }
         public string HelpMessageResourceId { get; set; }
-        public string Key { get; set; }
+        //public virtual string Key { get; set; }
+        string IRuntimeParameter.Key { get { return _key; } set { _key = value; } }
         public bool Mandatory { get; set; }
         public string Name { get; set; }
         public string ParameterSetName { get; set; }
@@ -48,7 +50,7 @@ namespace MG.Dynamic.Parameter
         #endregion
 
         #region CONSTRUCTORS
-        public RuntimeParameter() { }
+        //public RuntimeParameter() { }
         public RuntimeParameter(string name) => this.Name = name;
 
         #endregion
@@ -105,7 +107,15 @@ namespace MG.Dynamic.Parameter
 
             return new RuntimeDefinedParameter(this.Name, this.ParameterType, new Collection<Attribute>(attCol));
         }
-
+        public string GetKey(bool useNameIfEmptyKey)
+        {
+            if (useNameIfEmptyKey)
+            {
+                return string.IsNullOrEmpty(_key) ? this.Name : _key;
+            }
+            else
+                return _key;
+        }
         public virtual ParameterAttribute MakeParameterAttribute()
         {
             var pAtt = new ParameterAttribute
@@ -133,7 +143,6 @@ namespace MG.Dynamic.Parameter
 
             return pAtt;
         }
-
 
         #endregion
     }
