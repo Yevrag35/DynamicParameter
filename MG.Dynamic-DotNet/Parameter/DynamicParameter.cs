@@ -25,14 +25,14 @@ namespace MG.Dynamic.Parameter
         //private List<string> _aliases;
         //private List<string> _items;
         private HashSet<string> _items;
-        //private List<T> _backingItems;
+        private protected List<T> _backingItems;
         private string _mappedProperty;
 
         #endregion
 
         #region PROPERTIES
 
-        public IList<T> BackingItems { get; protected set; } = new List<T>();
+        public IList<T> BackingItems => _backingItems;
 
         /// <summary>
         /// The underlying type of the backend item collection that signifies this class's generic constraint.
@@ -81,7 +81,7 @@ namespace MG.Dynamic.Parameter
             this.Name = name;
             this.ParameterType = parameterType;
             //_aliases = new List<string>();
-            this.BackingItems = new List<T>(items);
+            _backingItems = new List<T>(items);
             _items = new HashSet<string>();
         }
 
@@ -102,7 +102,7 @@ namespace MG.Dynamic.Parameter
                 this.Aliases = new List<string>(aliases);
 
             _propertyFunc = propertyExpression.Compile();
-            this.BackingItems = new List<T>(items);
+            _backingItems = new List<T>(items);
             var convertibles = new List<IConvertible>(items.Select(_propertyFunc));
             _items = new HashSet<string>();
             convertibles.ForEach((ic) =>
@@ -135,7 +135,7 @@ namespace MG.Dynamic.Parameter
             _mappedProperty = mappingProperty;
             Type t = typeof(string);
             //_aliases = new List<string>();
-            this.BackingItems = new List<T>(items);
+            _backingItems = new List<T>(items);
             _items = new HashSet<string>(items.Select(validateSetProperty));
 
             if (parameterTypeIsArray)
@@ -161,7 +161,7 @@ namespace MG.Dynamic.Parameter
             this.Name = name;
             _mappedProperty = mappingProperty;
             //_aliases = new List<string>();
-            this.BackingItems = new List<T>(items);
+            _backingItems = new List<T>(items);
             _items = new HashSet<string>();
             Type t = null;
             foreach (ValueType vt in items.Select(validateSetProperty))
@@ -183,15 +183,15 @@ namespace MG.Dynamic.Parameter
         /// <summary>
         /// Retrieves all the underlying objects that were used to build the ValidateSet.
         /// </summary>
-        ICollection IDynParam.GetBackingItems() => this.BackingItems;
-        {
+        ICollection IDynParam.GetBackingItems() => _backingItems;
+        //{
             //var objArr = new object[this.BackingItems.Count];
             //for (int i = 0; i < this.BackingItems.Count; i++)
             //{
             //    objArr[i] = this.BackingItems[i];
             //}
             //return objArr;
-        }
+        //}
         ICollection<T> IDynParam<T>.GetBackingItems() => this.BackingItems;
 
         /// <summary>

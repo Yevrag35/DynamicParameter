@@ -102,7 +102,7 @@ namespace MG.Dynamic.Parameter
             else if (this.PropertyFunction == null)
                 this.PropertyFunction = propertyExpression.Compile();
 
-            this.BackingItems = new List<T1>(items);
+            _backingItems = new List<T1>(items);
             foreach (IConvertible icon in items.Select(this.PropertyFunction))
             {
                 this.ValidatedItems.Add(Convert.ToString(icon));
