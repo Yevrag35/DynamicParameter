@@ -55,6 +55,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestEnv\LetsGo.cs" />
     <Content Include="Debug.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -76,7 +77,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="TestEnv\TestClass.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\TempDynamic\TempDynamic.csproj">
+      <Project>{569dea41-2b7e-4084-a83f-4f215393f4b5}</Project>
+      <Name>TempDynamic</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <None Include="TestEnv\TestDynModule.psd1" />
     <None Include="TestEnv\TestDynModule.psm1" />
