@@ -12,11 +12,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Commands\TestDynamicCmdlet.cs" />
+    <None Remove="Debug.ps1" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Commands\TestDynamicCmdlet.cs" />
+    <Content Include="Debug.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -24,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MG.Dynamic-Standard\MG.Dynamic-Standard.csproj" />
+    <ProjectReference Include="..\TempDynamic\TempDynamic.csproj" />
   </ItemGroup>
 
 </Project>

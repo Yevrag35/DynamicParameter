@@ -1,5 +1,7 @@
-﻿using MG.Dynamic.Library;
-using MG.Dynamic.Parameter;
+﻿//using MG.Dynamic.Library;
+//using MG.Dynamic.Parameter;
+using TempDynamic;
+using TempDynamic.Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,7 +14,7 @@ namespace MG.Dynamic.Tests.Module.Commands
     public class TestDynamicCmdlet : PSCmdlet, IDynamicParameters
     {
         #region FIELDS/CONSTANTS
-        private DynamicLibrary
+        private RuntimeParameter _rp;
 
         #endregion
 
@@ -25,7 +27,16 @@ namespace MG.Dynamic.Tests.Module.Commands
         #region DYNAMIC
         public object GetDynamicParameters()
         {
+            _rp = new RuntimeParameter("Numbers", typeof(int[]))
+            {
+                Mandatory = true
+            };
+            _rp.ValidatedItems.UnionWith(new int[] { 1, 2, 3, 7 }.Select(x => x.ToString()));
 
+            return new RuntimeDefinedParameterDictionary()
+            {
+                _rp
+            };
         }
 
         #endregion
@@ -34,12 +45,12 @@ namespace MG.Dynamic.Tests.Module.Commands
         protected override void BeginProcessing()
         {
             base.BeginProcessing();
-
         }
 
         protected override void ProcessRecord()
         {
-
+            object num = _rp.GetChosenValues<string>();
+            base.WriteObject(num);
         }
 
         protected override void EndProcessing()

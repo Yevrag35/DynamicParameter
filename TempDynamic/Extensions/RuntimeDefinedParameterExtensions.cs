@@ -8,34 +8,34 @@ namespace TempDynamic.Extensions
 {
     public static class RuntimeDefinedParameterExtensions
     {
-        public static RuntimeDefinedParameter AllowEmptyCollection(this RuntimeDefinedParameter parameter, bool toggle = true)
-        {
-            if (toggle)
-                parameter.Attributes.Add(new AllowEmptyCollectionAttribute());
+        //public static RuntimeDefinedParameter AllowEmptyCollection(this RuntimeDefinedParameter parameter, bool toggle = true)
+        //{
+        //    if (toggle)
+        //        parameter.Attributes.Add(new AllowEmptyCollectionAttribute());
 
-            return parameter;
-        }
+        //    return parameter;
+        //}
 
-        public static RuntimeDefinedParameter AllowEmptyString(this RuntimeDefinedParameter parameter, bool toggle = true)
-        {
-            if (toggle)
-                parameter.Attributes.Add(new AllowEmptyStringAttribute());
+        //public static RuntimeDefinedParameter AllowEmptyString(this RuntimeDefinedParameter parameter, bool toggle = true)
+        //{
+        //    if (toggle)
+        //        parameter.Attributes.Add(new AllowEmptyStringAttribute());
 
-            return parameter;
-        }
+        //    return parameter;
+        //}
 
-        public static RuntimeDefinedParameter AllowNull(this RuntimeDefinedParameter parameter, bool toggle = true)
-        {
-            if (toggle)
-                parameter.Attributes.Add(new AllowNullAttribute());
+        //public static RuntimeDefinedParameter AllowNull(this RuntimeDefinedParameter parameter, bool toggle = true)
+        //{
+        //    if (toggle)
+        //        parameter.Attributes.Add(new AllowNullAttribute());
 
-            return parameter;
-        }
+        //    return parameter;
+        //}
 
-        public static RuntimeDefinedParameter DontShow(this RuntimeDefinedParameter parameter, bool toggle = true)
-        {
-            if (toggle)
-                parameter.
-        }
+        //public static RuntimeDefinedParameter DontShow(this RuntimeDefinedParameter parameter, bool toggle = true)
+        //{
+        //    if (toggle)
+        //        parameter.
+        //}
     }
 }

@@ -4,7 +4,13 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
   <ItemGroup>
+    <PackageReference Include="MG.Collections" Version="1.0.0" />
     <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" />
   </ItemGroup>
 
