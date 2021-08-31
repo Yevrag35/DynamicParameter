@@ -10,9 +10,9 @@ using System.Reflection;
 
 namespace TempDynamic
 {
-    public class RuntimeParameter
+    public class DynamicParameter<T>
     {
-        private RuntimeDefinedParameter _rpRef;
+        protected RuntimeDefinedParameter BackingParameter { get; set; }
 
         public List<string> Aliases { get; } = new List<string>();
         public CmdletMetadataCollection Attributes { get; }
@@ -62,7 +62,6 @@ namespace TempDynamic
             get => this.Attributes.Parameter.ParameterSetName;
             set => this.Attributes.Parameter.ParameterSetName = value;
         }
-        public Type ParameterType { get; set; }
         public int Position
         {
             get => this.Attributes.Parameter.Position;
@@ -110,18 +109,17 @@ namespace TempDynamic
             set => this.Attributes.Parameter.ValueFromRemainingArguments = value;
         }
 
-        public RuntimeParameter(string name)
-            : this(name, typeof(string[]))
+        public DynamicParameter()
+            : this(null)
         {
         }
-        public RuntimeParameter(string name, Type parameterType)
+        public DynamicParameter(string name)
         {
             this.Name = name;
-            this.ParameterType = parameterType;
             this.Attributes = new CmdletMetadataCollection();
         }
-        public RuntimeParameter(string name, Type parameterType, IEnumerable<CmdletMetadataAttribute> attributes)
-            : this(name, parameterType)
+        public DynamicParameter(string name, IEnumerable<CmdletMetadataAttribute> attributes)
+            : this(name)
         {
             foreach (CmdletMetadataAttribute attribute in attributes
                 .Where(x => !typeof(ParameterAttribute).Equals(x?.GetType())))
@@ -130,7 +128,7 @@ namespace TempDynamic
             }
         }
 
-        public static implicit operator RuntimeDefinedParameter(RuntimeParameter rp)
+        public static implicit operator RuntimeDefinedParameter(DynamicParameter<T> rp)
         {
             if (!rp.Attributes.Contains<AliasAttribute>() && TryCopyAliases(rp.Aliases, out AliasAttribute aliases))
                 rp.Attributes.Add(aliases);
@@ -138,87 +136,54 @@ namespace TempDynamic
             if (TryCopyValidatedItems(rp.ValidatedItems, out ValidateSetAttribute attribute) && !rp.Attributes.Contains<ValidateSetAttribute>())
                 rp.Attributes.Add(attribute);
 
-            rp._rpRef = new RuntimeDefinedParameter(rp.Name, rp.ParameterType, rp.Attributes);
-            return rp._rpRef;
+            rp.BackingParameter = new RuntimeDefinedParameter(rp.Name, typeof(T), rp.Attributes);
+            return rp.BackingParameter;
         }
 
         /// <summary>
-        /// Retrieves the value of the parameter.
+        /// Retrieves the selected parameter value.
         /// </summary>
-        /// <typeparam name="T">
-        ///     The type to return the selected value as.  This should match the type defined in <see cref="ParameterType"/>.
-        /// </typeparam>
         /// <returns>
         ///     The single value selected by the parameter casted to the parameter type <typeparamref name="T"/>.  If no value
         ///     was selected, the default value for <typeparamref name="T"/> is returned.
         /// </returns>
-        /// <exception cref="ArgumentException"><typeparamref name="T"/> does not match the type <see cref="ParameterType"/>.</exception>
-        /// <exception cref="InvalidOperationException"><see cref="ParameterType"/> is an array type.</exception>
-        public T GetChosenValue<T>()
+        public T GetChosenValue()
         {
-            if (null == _rpRef)
+            if (null == this.BackingParameter)
                 return default;
 
-            if (this.ParameterType.IsArray)
-                throw new InvalidOperationException(string.Format("{0} was defined as an array type.  Use '{1}<{2}>()' instead.",
-                    this.Name, nameof(GetChosenValues), nameof(T)));
-
-            if (!this.ParameterType.Equals(typeof(T)))
-                throw new ArgumentException(
-                    string.Format("The argument 'T' of type '{0}' is not equal to the parameter's defined type '{1}'.",
-                    typeof(T).FullName, this.ParameterType.FullName));
-
-            return (T)_rpRef.Value;
+            return (T)this.BackingParameter.Value;
         }
-        public T[] GetChosenValues<T>()
-        {
-            if (null == _rpRef)
-                return null;
-
-            if (!this.ParameterType.Equals(typeof(T[])))
-                throw new ArgumentException(
-                    string.Format("The argument 'T' of type '{0}' is not equal to the parameter's defined type '{1}'.",
-                    typeof(T[]).FullName, this.ParameterType.FullName));
-
-            if (this.ParameterType.IsArray && _rpRef.Value is ICollection icol)
-            {
-                return icol.Cast<T>().ToArray();
-            }
-            else
-            {
-                return new T[] { (T)_rpRef.Value };
-            }
-        }
-        private void ReplaceAttribute<T>(Range? range, Func<Range, T> ctor)
-            where T : ValidateArgumentsAttribute
+        private void ReplaceAttribute<TAtt>(Range? range, Func<Range, TAtt> ctor)
+            where TAtt : ValidateArgumentsAttribute
         {
             if (range.HasValue)
             {
-                if (this.Attributes.Contains<T>())
-                    this.Attributes.Remove<T>();
+                if (this.Attributes.Contains<TAtt>())
+                    this.Attributes.Remove<TAtt>();
 
                 this.Attributes.Add(ctor(range.Value));
             }
             else
             {
-                this.Attributes.Remove<T>();
+                this.Attributes.Remove<TAtt>();
             }
         }
-        private void SetAttribute<T>(bool toggle)
-            where T : CmdletMetadataAttribute, new()
+        private void SetAttribute<TAtt>(bool toggle)
+            where TAtt : CmdletMetadataAttribute, new()
         {
-            this.SetAttribute(toggle, () => new T());
+            this.SetAttribute(toggle, () => new TAtt());
         }
-        private void SetAttribute<T>(bool toggle, Func<T> ctor)
-            where T : CmdletMetadataAttribute
+        private void SetAttribute<TAtt>(bool toggle, Func<TAtt> ctor)
+            where TAtt : CmdletMetadataAttribute
         {
-            if (toggle && !this.Attributes.Contains<T>())
+            if (toggle && !this.Attributes.Contains<TAtt>())
                 this.Attributes.Add(ctor());
 
             else if (!toggle)
-                this.Attributes.Remove<T>();
+                this.Attributes.Remove<TAtt>();
         }
-        private static bool TryCopyAliases(IList<string> list, out AliasAttribute attribute)
+        protected static bool TryCopyAliases(IList<string> list, out AliasAttribute attribute)
         {
             attribute = null;
             if (null != list && list.Count > 0)
@@ -230,7 +195,7 @@ namespace TempDynamic
 
             return null != attribute;
         }
-        private static bool TryCopyValidatedItems(ICollection<string> items, out ValidateSetAttribute attribute)
+        protected static bool TryCopyValidatedItems(ICollection<string> items, out ValidateSetAttribute attribute)
         {
             attribute = null;
             if (null != items && items.Count > 0)

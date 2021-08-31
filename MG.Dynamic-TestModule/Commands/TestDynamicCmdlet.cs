@@ -14,7 +14,7 @@ namespace MG.Dynamic.Tests.Module.Commands
     public class TestDynamicCmdlet : PSCmdlet, IDynamicParameters
     {
         #region FIELDS/CONSTANTS
-        private RuntimeParameter _rp;
+        private DynamicParameter<int[]> _rp;
 
         #endregion
 
@@ -27,7 +27,7 @@ namespace MG.Dynamic.Tests.Module.Commands
         #region DYNAMIC
         public object GetDynamicParameters()
         {
-            _rp = new RuntimeParameter("Numbers", typeof(int[]))
+            _rp = new DynamicParameter<int[]>("Numbers")
             {
                 Mandatory = true
             };
@@ -49,7 +49,7 @@ namespace MG.Dynamic.Tests.Module.Commands
 
         protected override void ProcessRecord()
         {
-            object num = _rp.GetChosenValues<string>();
+            object num = _rp.GetChosenValue();
             base.WriteObject(num);
         }
 
