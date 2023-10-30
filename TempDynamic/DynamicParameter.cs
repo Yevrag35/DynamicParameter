@@ -10,12 +10,12 @@ using System.Reflection;
 
 namespace TempDynamic
 {
-    public class DynamicParameter
+    public class DynamicParameter : IPowerShellDynamicParameter
     {
         protected RuntimeDefinedParameter BackingParameter { get; set; }
 
-        public List<string> Aliases { get; } = new List<string>();
-        public CmdletMetadataCollection Attributes { get; }
+        public IList<string> Aliases { get; } = new List<string>();
+        public IMetadataAttributeCollection Attributes { get; protected set; }
         public bool AllowEmptyCollection
         {
             get => this.Attributes.Contains<AllowEmptyCollectionAttribute>();
@@ -142,10 +142,19 @@ namespace TempDynamic
             if (TryCopyValidatedItems(rp.ValidatedItems, out ValidateSetAttribute attribute) && !rp.Attributes.Contains<ValidateSetAttribute>())
                 rp.Attributes.Add(attribute);
 
-            rp.BackingParameter = new RuntimeDefinedParameter(rp.Name, rp.ParameterType, rp.Attributes);
+            rp.BackingParameter = new RuntimeDefinedParameter(rp.Name, rp.ParameterType, rp.Attributes.ToCollection());
             return rp.BackingParameter;
         }
 
+        public RuntimeDefinedParameter AsRuntimeParameter()
+        {
+            return this;
+        }
+
+        object IPowerShellDynamicParameter.GetChosenValue()
+        {
+            return this.BackingParameter?.Value;
+        }
         /// <summary>
         /// Retrieves the selected parameter value.
         /// </summary>

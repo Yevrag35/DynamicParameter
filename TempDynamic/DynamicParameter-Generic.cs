@@ -10,9 +10,10 @@ using System.Reflection;
 
 namespace TempDynamic
 {
-    public class DynamicParameter<T>
+    public class DynamicParameter<T> : IPowerShellDynamicParameter<T>
     {
         protected RuntimeDefinedParameter BackingParameter { get; set; }
+        internal RuntimeDefinedParameter DefinedParameter => BackingParameter;
 
         public List<string> Aliases { get; } = new List<string>();
         public CmdletMetadataCollection Attributes { get; }
@@ -140,6 +141,15 @@ namespace TempDynamic
             return rp.BackingParameter;
         }
 
+        public RuntimeDefinedParameter AsRuntimeParameter()
+        {
+            return this;
+        }
+
+        object IPowerShellDynamicParameter.GetChosenValue()
+        {
+            return BackingParameter?.Value;
+        }
         /// <summary>
         /// Retrieves the selected parameter value.
         /// </summary>
@@ -153,6 +163,14 @@ namespace TempDynamic
                 return default;
 
             return (T)this.BackingParameter.Value;
+        }
+        public T[] GetChosenValues()
+        {
+            if (null == this.BackingParameter)
+                return new T[0];
+
+            Console.WriteLine("hi");
+            return (T[])this.BackingParameter.Value;
         }
         private void ReplaceAttribute<TAtt>(Range? range, Func<Range, TAtt> ctor)
             where TAtt : ValidateArgumentsAttribute
