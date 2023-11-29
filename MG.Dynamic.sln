@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29424.173
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MG.Dynamic-DotNet", "MG.Dynamic-DotNet\MG.Dynamic-DotNet.csproj", "{D0126AB3-1869-406C-BDD6-684F46D8B8C8}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -23,6 +23,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MG.Dynamic-TestModule", "MG.Dynamic-TestModule\MG.Dynamic-TestModule.csproj", "{E72AB2AB-5336-4F2F-8D00-6AAE2875DFBC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TempDynamic", "TempDynamic\TempDynamic.csproj", "{569DEA41-2B7E-4084-A83F-4F215393F4B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MG.Dynamic.Next", "MG.Dynamic.Next\MG.Dynamic.Next.csproj", "{0029AB0F-1194-4D1C-BE1A-F4498429996A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +56,10 @@ Global
 		{569DEA41-2B7E-4084-A83F-4F215393F4B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{569DEA41-2B7E-4084-A83F-4F215393F4B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{569DEA41-2B7E-4084-A83F-4F215393F4B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0029AB0F-1194-4D1C-BE1A-F4498429996A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0029AB0F-1194-4D1C-BE1A-F4498429996A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0029AB0F-1194-4D1C-BE1A-F4498429996A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0029AB0F-1194-4D1C-BE1A-F4498429996A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

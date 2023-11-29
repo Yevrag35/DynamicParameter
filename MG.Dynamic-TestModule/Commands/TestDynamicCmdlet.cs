@@ -1,88 +1,49 @@
-﻿//using MG.Dynamic.Library;
-//using MG.Dynamic.Parameter;
-using TempDynamic;
-using TempDynamic.Extensions;
-using TempDynamic.Extensions.Lists;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using MG.Dynamic.Collections;
+using MG.Dynamic.Parameters;
+using System.Diagnostics;
 using System.Management.Automation;
 
 namespace MG.Dynamic.Tests.Module.Commands
 {
     [Cmdlet(VerbsDiagnostic.Test, "Dynamic")]
-    public class TestDynamicCmdlet : PSCmdlet, IDynamicParameters
+    public sealed class TestDynamicCmdlet : PSCmdlet, IDynamicParameters
     {
-        #region FIELDS/CONSTANTS
-        private static readonly Range[] _ranges = new Range[]
+        const string ID = "Id";
+        static DynamicLibrary _lib = null!;
+        static IRuntimeParameter<int> _param = null!;
+
+        [Parameter(Mandatory = true)]
+        public string Name { get; set; } = string.Empty;
+
+        public object? GetDynamicParameters()
         {
-            new Range(0, 45), new Range(45, 549), new Range(7, 10)
-        };
-        private DynamicParameter<Range, int> _rp;
-
-        #endregion
-
-        #region PARAMETERS
-        [Parameter(Mandatory = false)]
-        public string Name { get; set; }
-
-        #endregion
-
-        #region DYNAMIC
-        public object GetDynamicParameters()
-        {
-            _rp = new DynamicParameter<Range, int>("Numbers", x => x.Difference)
+           if (!this.Name.Equals("TheMan", StringComparison.OrdinalIgnoreCase))
             {
-                Mandatory = true,
-                ParameterIsArray = false
-            };
-
-            _rp.ValidatedItems.AddRange(_ranges);
-
-            return new RuntimeDefinedParameterDictionary
+                return null;
+            }
+            else if (_lib is null)
             {
-                _rp
-            };
+                _lib = new();
+                _param = _lib.Add<int>(ID);
+                _param.DefaultParameter.Mandatory = true;
+            }
 
-            //_rp = new DynamicParameter<int[]>("Numbers")
-            //{
-            //    Mandatory = true
-            //};
-            //_rp.ValidatedItems.UnionWith(new int[] { 1, 2, 3, 7 }.Select(x => x.ToString()));
-
-            //return new RuntimeDefinedParameterDictionary()
-            //{
-            //    _rp
-            //};
+            return (RuntimeDefinedParameterDictionary)_lib;
         }
 
-        #endregion
-
-        #region CMDLET PROCESSING
         protected override void BeginProcessing()
         {
-            base.BeginProcessing();
+            Debug.Assert(_param is not null);
         }
 
         protected override void ProcessRecord()
         {
-            //object num = _rp.GetChosenValue();
-            //base.WriteObject(num);
-            var range = _rp.GetMatchingSource();
-            base.WriteObject(range, true);
+            Debug.Assert(_param is not null);
+            if (this.MyInvocation.BoundParameters.TryGetValue(ID, out object? val) && val is int id)
+            {
+                int boundValue = _param.GetBoundValue();
+                Debug.Assert(id == boundValue);
+            }
         }
-
-        protected override void EndProcessing()
-        {
-
-        }
-
-        #endregion
-
-        #region BACKEND METHODS
-
-
-        #endregion
     }
 }

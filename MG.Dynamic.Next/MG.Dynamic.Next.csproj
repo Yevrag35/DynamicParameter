@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	<RootNamespace>MG.Dynamic</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Collections\AttributeCollection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Collections\AttributeCollection.cs" />
+  </ItemGroup>
+	
+  <ItemGroup>
+	  <Using Include="MG.Dynamic.Extensions" />
+	  <Using Include="MG.Dynamic.Exceptions" />
+	  <Using Include="System.Management.Automation" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Management.Automation" Version="7.4.0" />
+  </ItemGroup>
+
+</Project>

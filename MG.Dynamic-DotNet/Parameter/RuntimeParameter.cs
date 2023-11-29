@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Management.Automation;
-using System.Reflection;
-
-namespace MG.Dynamic.Parameter
+﻿namespace MG.Dynamic.Parameter
 {
     public class RuntimeParameter : IRuntimeParameter
     {
