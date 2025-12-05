@@ -1,18 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	<RootNamespace>MG.Dynamic</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Collections\AttributeCollection.cs" />
+    <None Remove="Debug.ps1" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Collections\AttributeCollection.cs" />
+    <Content Include="Debug.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 	
   <ItemGroup>
@@ -22,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Management.Automation" Version="7.4.0" />
+    <PackageReference Include="System.Management.Automation" Version="7.5.4" />
   </ItemGroup>
 
 </Project>
