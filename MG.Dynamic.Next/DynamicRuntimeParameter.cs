@@ -33,10 +33,8 @@ public partial class DynamicRuntimeParameter : RuntimeDefinedParameter
 		set => GetParameterTypeField(this) = value;
 	}
 
-	public DynamicRuntimeParameter(params ReadOnlySpan<Attribute> attributes) : base()
+	public DynamicRuntimeParameter(params ReadOnlySpan<Attribute> attributes) : this(AttributeCollection.Create(attributes))
 	{
-		_attributes = AttributeCollection.Create(attributes);
-		GetAttributes(this) = _attributes;
 	}
 	public DynamicRuntimeParameter(string name, Type parameterType, params ReadOnlySpan<Attribute> attributes)
 		: base(name, parameterType, ReturnAndOut(out var collection, attributes))
@@ -48,6 +46,11 @@ public partial class DynamicRuntimeParameter : RuntimeDefinedParameter
 	{
 		_attributes = collection;
 	}
+	protected DynamicRuntimeParameter(AttributeCollection attributes) : base()
+	{
+		_attributes = attributes;
+		GetAttributes(this) = _attributes;
+    }
 
 	private static AttributeCollection ReturnAndOut(out AttributeCollection collection, ReadOnlySpan<Attribute> values)
 	{

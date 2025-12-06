@@ -1,6 +1,6 @@
 ﻿namespace MG.Dynamic.Collections;
 
-public sealed partial class AttributeCollection
+public partial class AttributeCollection
 {
 	/// <summary>
 	/// Returns an enumerator that iterates through the collection.

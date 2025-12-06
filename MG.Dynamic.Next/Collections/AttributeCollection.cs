@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 namespace MG.Dynamic.Collections;
 
 [CollectionBuilder(typeof(AttributeCollection), nameof(Create))]
-public sealed partial class AttributeCollection : Collection<Attribute>, IEnumerable<Attribute>
+public partial class AttributeCollection : Collection<Attribute>, IEnumerable<Attribute>
 {
 	private static readonly FrozenSet<Type> s_singleAttributes = FrozenSet.Create(
 		typeof(AliasAttribute),
@@ -53,7 +53,7 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 		_allParameters = null; // only created when a second parameter is added
 	}
 
-	private AttributeCollection(List<Attribute> attributes, Dictionary<Type, Attribute> singles, ParameterAttribute? paramAttribute)
+	private protected AttributeCollection(List<Attribute> attributes, Dictionary<Type, Attribute> singles, ParameterAttribute? paramAttribute)
 		: base(attributes)
 	{
 		bool hasParamAtt = paramAttribute is not null;
@@ -93,7 +93,7 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 		_allParameters = allParams;
 	}
 
-	public bool CanAdd<T>(T attributeToCheck) where T : Attribute
+	public virtual bool CanAdd<T>(T attributeToCheck) where T : Attribute
 	{
 		if (attributeToCheck is null) return false;
 		if (attributeToCheck is ParameterAttribute) return true;
@@ -204,14 +204,25 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 		return false;
 	}
 
-	protected override void ClearItems()
+	protected sealed override void ClearItems()
+	{
+		this.ClearCore(startingIndex: 1);
+	}
+	protected virtual void ClearItems(int startingIndex)
+	{
+		ArgumentOutOfRangeException.ThrowIfNegativeOrZero(startingIndex);
+		ArgumentOutOfRangeException.ThrowIfGreaterThan(startingIndex, _allAttributes.Count);
+
+		this.ClearCore(startingIndex);
+	}
+	private void ClearCore(int startingIndex)
 	{
 		_singles.Clear();
 		ListView<Attribute> view = Unsafe.As<ListView<Attribute>>(_allAttributes);
 		view._version++;
 		Attribute[] array = view._items;
-		Array.Clear(array, 1, array.Length - 1);
-		view._size = 1;
+		Array.Clear(array, startingIndex, array.Length - startingIndex);
+		view._size = startingIndex;
 
 		if (_allParameters is not null)
 		{
@@ -330,8 +341,8 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 				int idx = _allAttributes.IndexOf(oldDefault);
 				if (idx > 0)
 				{
-					_allAttributes.RemoveAt(idx);
-					_allAttributes.Insert(0, oldDefault);
+					this.RemoveItem(idx);
+					this.InsertItem(0, oldDefault);
 				}
 			}
 
@@ -353,11 +364,11 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 		int existingIndex = _allAttributes.IndexOf(newDefault);
 		if (existingIndex >= 0)
 		{
-			_allAttributes.RemoveAt(existingIndex);
+			this.RemoveItem(existingIndex);
 		}
 
 		// Insert new default at index 0; old default moves to index 1 automatically.
-		_allAttributes.Insert(0, newDefault);
+		this.InsertItem(0, newDefault);
 		_paramAtt = newDefault;
 
 		if (_allParameters is null)
