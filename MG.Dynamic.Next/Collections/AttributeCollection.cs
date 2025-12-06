@@ -26,8 +26,9 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 		typeof(System.Management.Automation.AllowNullAttribute)
 	);
 
+	private readonly List<Attribute> _allAttributes;
+	private readonly List<ParameterAttribute>? _allParameters;
 	private ParameterAttribute _paramAtt;
-	private readonly List<Attribute> _rawList;
 	private readonly Dictionary<Type, Attribute> _singles;
 
 	/// <summary>
@@ -40,7 +41,7 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 		ParameterAttribute paramAtt = new();
 		_paramAtt = paramAtt;
 		list.Add(paramAtt);
-		_rawList = list;
+		_allAttributes = list;
 		_singles = [];
 	}
 	private AttributeCollection(List<Attribute> attributes, Dictionary<Type, Attribute> singles, ParameterAttribute? paramAttribute) : base(attributes)
@@ -54,7 +55,7 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 		Debug.Assert(attributes.Count > 0 && attributes[0] is ParameterAttribute, "This should be a ParameterAttribute at this point.");
 		_paramAtt = paramAttribute;
 		_singles = singles;
-		_rawList = attributes;
+		_allAttributes = attributes;
 	}
 
 	public bool CanAdd<T>(T attributeToCheck) where T : Attribute
@@ -68,18 +69,30 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 	public bool ContainsSingleAttributeType<T>() where T : Attribute
 	{
 		Type type = typeof(T);
-		return type.Equals(typeof(ParameterAttribute))
-			|| (s_singleAttributes.Contains(type) && _singles.ContainsKey(type));
+		return s_singleAttributes.Contains(type) && _singles.ContainsKey(type);
+	}
+	public bool TryAdd<T>(T attribute) where T : Attribute
+	{
+		if (attribute is null) return false;
+		if (attribute is ParameterAttribute pAtt)
+		{
+			_allAttributes.Add(pAtt);
+			_allParameters.Add(pAtt);
+			return true;
+		}
+
+		Type type = typeof(T);
+		if (!s_singleAttributes.Contains(type) || _singles.TryAdd(type, attribute))
+		{
+			_allAttributes.Add(attribute);
+			return true;
+		}
+
+		return false;
 	}
 	public bool TryGetSingle<T>([NotNullWhen(true)] out T? attribute) where T : Attribute
 	{
 		Type type = typeof(T);
-		if (type.Equals(typeof(ParameterAttribute)))
-		{
-			attribute = Unsafe.As<T>(_paramAtt);
-			return true;
-		}
-
 		if (s_singleAttributes.Contains(type) && _singles.TryGetValue(type, out var att))
 		{
 			attribute = (T)att;
@@ -93,7 +106,7 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 	protected override void ClearItems()
 	{
 		_singles.Clear();
-		ListView view = Unsafe.As<ListView>(_rawList);
+		ListView view = Unsafe.As<ListView>(_allAttributes);
 		view._version++;
 		Attribute[] array = view._items;
 		Array.Clear(array, 1, array.Length - 1);
@@ -101,11 +114,15 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 	}
 	protected override void InsertItem(int index, Attribute item)
 	{
-		if (index == 0) this.SetItem(index, item);
+		if (index == 0)
+		{
+			this.SetItem(index, item);
+			return;
+		}
 
 		ArgumentNullException.ThrowIfNull(item);
 		ArgumentOutOfRangeException.ThrowIfNegative(index);
-		ArgumentOutOfRangeException.ThrowIfGreaterThan(index, _rawList.Count);
+		ArgumentOutOfRangeException.ThrowIfGreaterThan(index, _allAttributes.Count);
 
 		if (IsSingleType(item, out var type))
 		{
@@ -115,20 +132,20 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 			}
 		}
 
-		_rawList[index] = item;
+		_allAttributes.Insert(index, item);
 	}
 	protected override void RemoveItem(int index)
 	{
 		ArgumentOutOfRangeException.ThrowIfNegative(index);
 		if (index == 0) throw new ArgumentException("Cannot remove the 'ParameterAttribute' for this collection.", nameof(index));
 
-		Attribute attribute = _rawList[index];
+		Attribute attribute = _allAttributes[index];
 		Type type = attribute.GetType();
 
 		if (s_singleAttributes.Contains(type))
 			_singles.Remove(type);
 
-		_rawList.RemoveAt(index);
+		_allAttributes.RemoveAt(index);
 	}
 	protected override void SetItem(int index, Attribute item)
 	{
@@ -139,7 +156,7 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 			{
 				if (!ReferenceEquals(_paramAtt, paramAtt))
 				{
-					_rawList[0] = paramAtt;
+					_allAttributes[0] = paramAtt;
 					_paramAtt = paramAtt;
 				}
 			}
@@ -156,7 +173,7 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 			_singles[type] = item;
 		}
 
-		_rawList[index] = item;
+		_allAttributes[index] = item;
 	}
 
 	private static bool IsSingleType(Attribute attribute, out Type attributeType)
