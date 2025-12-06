@@ -18,7 +18,12 @@
   </ItemGroup>
 	
   <ItemGroup>
+	  <Using Include="System.Collections" />
+	  <Using Include="System.Diagnostics" />
+	  <Using Include="System.Diagnostics.CodeAnalysis" />
 	  <Using Include="System.Management.Automation" />
+	  <Using Include="System.Runtime.CompilerServices" />
+	  <Using Include="System.Runtime.InteropServices" />
   </ItemGroup>
 
   <ItemGroup>
