@@ -1,3 +1,4 @@
+using MG.Dynamic.Internal;
 using System.Collections.Frozen;
 using System.Collections.ObjectModel;
 
@@ -27,14 +28,20 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 	);
 
 	private readonly List<Attribute> _allAttributes;
-	private readonly List<ParameterAttribute>? _allParameters;
+	private List<ParameterAttribute>? _allParameters; // lazily instantiated
 	private ParameterAttribute _paramAtt;
 	private readonly Dictionary<Type, Attribute> _singles;
+
+	public new Attribute this[int index]
+	{
+		get => _allAttributes[index];
+		set => base.SetItem(index, value);
+	}
 
 	/// <summary>
 	/// Gets the <see cref="ParameterAttribute"/> that is always present in the collection at index 0.
 	/// </summary>
-	public ParameterAttribute Parameter => _paramAtt;
+	public ParameterAttribute DefaultParameter => _paramAtt;
 
 	public AttributeCollection() : base(ReturnOut(new(1), out var list))
 	{
@@ -43,19 +50,47 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 		list.Add(paramAtt);
 		_allAttributes = list;
 		_singles = [];
+		_allParameters = null; // only created when a second parameter is added
 	}
-	private AttributeCollection(List<Attribute> attributes, Dictionary<Type, Attribute> singles, ParameterAttribute? paramAttribute) : base(attributes)
+
+	private AttributeCollection(List<Attribute> attributes, Dictionary<Type, Attribute> singles, ParameterAttribute? paramAttribute)
+		: base(attributes)
 	{
-		if (paramAttribute is null)
+		bool hasParamAtt = paramAttribute is not null;
+		if (!hasParamAtt)
 		{
 			paramAttribute = new ParameterAttribute();
 			attributes.Insert(0, paramAttribute);
 		}
 
 		Debug.Assert(attributes.Count > 0 && attributes[0] is ParameterAttribute, "This should be a ParameterAttribute at this point.");
-		_paramAtt = paramAttribute;
-		_singles = singles;
+
 		_allAttributes = attributes;
+		_singles = singles;
+		_paramAtt = paramAttribute!;
+
+		// Lazily build _allParameters only if there is more than one ParameterAttribute
+		List<ParameterAttribute>? allParams = null;
+
+		if (hasParamAtt)
+		{
+			for (int i = 1; i < attributes.Count; i++)
+			{
+				if (attributes[i] is ParameterAttribute p)
+				{
+					if (allParams is null)
+					{
+						allParams = [_paramAtt, p];
+					}
+					else
+					{
+						allParams.Add(p);
+					}
+				}
+			}
+		}
+
+		_allParameters = allParams;
 	}
 
 	public bool CanAdd<T>(T attributeToCheck) where T : Attribute
@@ -66,18 +101,83 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 		Type type = typeof(T);
 		return !s_singleAttributes.Contains(type) || !_singles.ContainsKey(type);
 	}
+
 	public bool ContainsSingleAttributeType<T>() where T : Attribute
 	{
 		Type type = typeof(T);
 		return s_singleAttributes.Contains(type) && _singles.ContainsKey(type);
 	}
+
+	public T GetOrAdd<T>() where T : Attribute, new()
+	{
+		Type type = typeof(T);
+		if (s_singleAttributes.Contains(type))
+		{
+			ref Attribute? attr = ref CollectionsMarshal.GetValueRefOrAddDefault(_singles, type, out bool exists);
+			if (exists) return (T)attr!;
+
+			T tAtt = new();
+			_allAttributes.Add(tAtt);
+			attr = tAtt;
+			return tAtt;
+		}
+
+		T newAtt = new();
+		_allAttributes.Add(newAtt);
+		return newAtt;
+	}
+	public T GetOrAdd<T>(Func<T> factory) where T : Attribute
+	{
+		Type type = typeof(T);
+		if (s_singleAttributes.Contains(type))
+		{
+			ref Attribute? attr = ref CollectionsMarshal.GetValueRefOrAddDefault(_singles, type, out bool exists);
+			if (exists) return (T)attr!;
+
+			T tAtt = factory();
+			_allAttributes.Add(tAtt);
+			attr = tAtt;
+			return tAtt;
+		}
+
+		T newAtt = factory();
+		_allAttributes.Add(newAtt);
+		return newAtt;
+	}
+	public T GetOrAdd<T, TState>(TState state, Func<TState, T> factory) where T : Attribute where TState : allows ref struct
+	{
+		Type type = typeof(T);
+		if (s_singleAttributes.Contains(type))
+		{
+			ref Attribute? attr = ref CollectionsMarshal.GetValueRefOrAddDefault(_singles, type, out bool exists);
+			if (exists) return (T)attr!;
+
+			T tAtt = factory(state);
+			_allAttributes.Add(tAtt);
+			attr = tAtt;
+			return tAtt;
+		}
+
+		T newAtt = factory(state);
+		_allAttributes.Add(newAtt);
+		return newAtt;
+	}
+
+	public ReadOnlySpan<ParameterAttribute> GetParameterAttributes()
+	{
+		return _allParameters is null
+			? MemoryMarshal.CreateReadOnlySpan(in _paramAtt, 1)
+			: GetListAsSpan(_allParameters);
+	}
+
 	public bool TryAdd<T>(T attribute) where T : Attribute
 	{
 		if (attribute is null) return false;
+
 		if (attribute is ParameterAttribute pAtt)
 		{
+			this.AddNonDefaultParameterToAllParameters(pAtt);
 			_allAttributes.Add(pAtt);
-			_allParameters.Add(pAtt);
 			return true;
 		}
 
@@ -90,6 +190,7 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 
 		return false;
 	}
+
 	public bool TryGetSingle<T>([NotNullWhen(true)] out T? attribute) where T : Attribute
 	{
 		Type type = typeof(T);
@@ -106,17 +207,32 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 	protected override void ClearItems()
 	{
 		_singles.Clear();
-		ListView view = Unsafe.As<ListView>(_allAttributes);
+		ListView<Attribute> view = Unsafe.As<ListView<Attribute>>(_allAttributes);
 		view._version++;
 		Attribute[] array = view._items;
 		Array.Clear(array, 1, array.Length - 1);
 		view._size = 1;
+
+		if (_allParameters is not null)
+		{
+			ListView<ParameterAttribute> pView = Unsafe.As<ListView<ParameterAttribute>>(_allParameters);
+			pView._version++;
+			ParameterAttribute[] pArray = pView._items;
+			Array.Clear(pArray, 1, pArray.Length - 1);
+			pView._size = 1;
+
+			Debug.Assert(ReferenceEquals(pArray[0], _paramAtt), "The default parameter attribute should still be present.");
+			Debug.Assert(ReferenceEquals(pArray[0], _allAttributes[0]), "The default parameter attribute should still be present.");
+		}
+
+		_paramAtt.Reset();
 	}
+
 	protected override void InsertItem(int index, Attribute item)
 	{
 		if (index == 0)
 		{
-			this.SetItem(index, item);
+			this.SetItem(0, item);
 			return;
 		}
 
@@ -124,48 +240,73 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 		ArgumentOutOfRangeException.ThrowIfNegative(index);
 		ArgumentOutOfRangeException.ThrowIfGreaterThan(index, _allAttributes.Count);
 
+		if (item is ParameterAttribute pAtt)
+		{
+			this.AddNonDefaultParameterToAllParameters(pAtt);
+		}
+
 		if (IsSingleType(item, out var type))
 		{
 			if (!_singles.TryAdd(type, item))
 			{
-				throw new ArgumentException($"An attribute of type '{type.FullName ?? type.Name}' already exists in the collection.", nameof(item));
+				throw new ArgumentException(
+					$"An attribute of type '{type.FullName ?? type.Name}' already exists in the collection.",
+					nameof(item));
 			}
 		}
 
 		_allAttributes.Insert(index, item);
 	}
+
 	protected override void RemoveItem(int index)
 	{
 		ArgumentOutOfRangeException.ThrowIfNegative(index);
-		if (index == 0) throw new ArgumentException("Cannot remove the 'ParameterAttribute' for this collection.", nameof(index));
+		if (index == 0)
+		{
+			throw new ArgumentException("Cannot remove the 'ParameterAttribute' for this collection.", nameof(index));
+		}
 
 		Attribute attribute = _allAttributes[index];
 		Type type = attribute.GetType();
 
 		if (s_singleAttributes.Contains(type))
+		{
 			_singles.Remove(type);
+		}
+
+		if (attribute is ParameterAttribute pAtt)
+		{
+			this.RemoveNonDefaultParameterFromAllParameters(pAtt);
+		}
 
 		_allAttributes.RemoveAt(index);
 	}
+
 	protected override void SetItem(int index, Attribute item)
 	{
 		ArgumentNullException.ThrowIfNull(item);
+
 		if (index == 0)
 		{
-			if (item is ParameterAttribute paramAtt)
-			{
-				if (!ReferenceEquals(_paramAtt, paramAtt))
-				{
-					_allAttributes[0] = paramAtt;
-					_paramAtt = paramAtt;
-				}
-			}
-			else
+			if (item is not ParameterAttribute paramAtt)
 			{
 				throw new ArgumentException("Only a ParameterAttribute can be set at index 0.");
 			}
 
+			this.ReplaceDefaultParameter(paramAtt);
 			return;
+		}
+
+		Attribute existing = _allAttributes[index];
+
+		if (existing is ParameterAttribute existingParam && !ReferenceEquals(existingParam, _paramAtt))
+		{
+			this.RemoveNonDefaultParameterFromAllParameters(existingParam);
+		}
+
+		if (item is ParameterAttribute newParam && !ReferenceEquals(newParam, _paramAtt))
+		{
+			this.AddNonDefaultParameterToAllParameters(newParam);
 		}
 
 		if (IsSingleType(item, out var type))
@@ -176,22 +317,128 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 		_allAttributes[index] = item;
 	}
 
+	private void ReplaceDefaultParameter(ParameterAttribute newDefault)
+	{
+		ParameterAttribute oldDefault = _paramAtt;
+
+		// Same instance: just normalize ordering if needed.
+		if (ReferenceEquals(oldDefault, newDefault))
+		{
+			// Ensure default is at index 0 in _allAttributes
+			if (!ReferenceEquals(_allAttributes[0], oldDefault))
+			{
+				int idx = _allAttributes.IndexOf(oldDefault);
+				if (idx > 0)
+				{
+					_allAttributes.RemoveAt(idx);
+					_allAttributes.Insert(0, oldDefault);
+				}
+			}
+
+			// Ensure default is at index 0 in _allParameters if it exists.
+			if (_allParameters is not null)
+			{
+				int idx = _allParameters.IndexOf(oldDefault);
+				if (idx > 0)
+				{
+					_allParameters.RemoveAt(idx);
+					_allParameters.Insert(0, oldDefault);
+				}
+			}
+
+			return;
+		}
+
+		// If the new default already exists as a non-default parameter, remove that occurrence.
+		int existingIndex = _allAttributes.IndexOf(newDefault);
+		if (existingIndex >= 0)
+		{
+			_allAttributes.RemoveAt(existingIndex);
+		}
+
+		// Insert new default at index 0; old default moves to index 1 automatically.
+		_allAttributes.Insert(0, newDefault);
+		_paramAtt = newDefault;
+
+		if (_allParameters is null)
+		{
+			// This is the first time we have two ParameterAttribute instances.
+			_allParameters = [newDefault, oldDefault];
+		}
+		else
+		{
+			// Normalize _allParameters: new default at index 0, old default at index 1.
+			_allParameters.Remove(newDefault);
+			_allParameters.Remove(oldDefault);
+
+			_allParameters.Insert(0, newDefault);
+			_allParameters.Insert(1, oldDefault);
+		}
+	}
+
+	private void AddNonDefaultParameterToAllParameters(ParameterAttribute parameter)
+	{
+		// Default always tracked as _paramAtt; this helper is only for "additional" parameters.
+		if (ReferenceEquals(parameter, _paramAtt))
+		{
+			// Do not treat the default as an "additional" parameter.
+			if (_allParameters is not null)
+			{
+				// Ensure it is at index 0 if it somehow was not.
+				int idx = _allParameters.IndexOf(parameter);
+				if (idx > 0)
+				{
+					_allParameters.RemoveAt(idx);
+					_allParameters.Insert(0, parameter);
+				}
+			}
+
+			return;
+		}
+
+		if (_allParameters is null)
+		{
+			_allParameters = [_paramAtt, parameter];
+		}
+		else
+		{
+			_allParameters.Add(parameter);
+		}
+	}
+
+	private void RemoveNonDefaultParameterFromAllParameters(ParameterAttribute parameter)
+	{
+		if (_allParameters is null)
+		{
+			return;
+		}
+
+		int index = _allParameters.IndexOf(parameter);
+		if (index <= 0)
+		{
+			// Either not found or it is the default at index 0 (which we never remove here).
+			return;
+		}
+
+		_allParameters.RemoveAt(index);
+
+		// If we are back down to just the default, we can drop the list again.
+		if (_allParameters.Count == 1 && ReferenceEquals(_allParameters[0], _paramAtt))
+		{
+			_allParameters = null;
+		}
+	}
+
 	private static bool IsSingleType(Attribute attribute, out Type attributeType)
 	{
 		attributeType = attribute.GetType();
 		return s_singleAttributes.Contains(attributeType);
 	}
+
 	private static List<Attribute> ReturnOut(List<Attribute> list, out List<Attribute> output)
 	{
 		output = list;
 		return list;
-	}
-
-	private sealed class ListView
-	{
-		internal Attribute[] _items = null!;
-		internal int _size;
-		internal int _version;
 	}
 
 	[SuppressMessage("Style", "IDE0028:Simplify collection initialization", Justification = "This is a Create method.")]
@@ -244,7 +491,11 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 		return new(list, singles, pAtt);
 	}
 
-	private static void AddAttributeToListAndDictionary(Attribute attribute, List<Attribute> list, Dictionary<Type, Attribute> singles, ref ParameterAttribute? pAtt)
+	private static void AddAttributeToListAndDictionary(
+		Attribute attribute,
+		List<Attribute> list,
+		Dictionary<Type, Attribute> singles,
+		ref ParameterAttribute? pAtt)
 	{
 		ArgumentNullException.ThrowIfNull(attribute);
 		Type type = attribute.GetType();
@@ -261,16 +512,24 @@ public sealed partial class AttributeCollection : Collection<Attribute>, IEnumer
 			list.Add(attribute);
 		}
 	}
-	private static ReadOnlySpan<Attribute> GetListAsSpan(List<Attribute> list)
+
+	private sealed class ListView<T> where T : Attribute
+	{
+		internal T[] _items = null!;
+		internal int _size;
+		internal int _version;
+	}
+	private static ReadOnlySpan<T> GetListAsSpan<T>(List<T> list) where T : Attribute
 	{
 		if (list.Count == 0)
+		{
 			return [];
+		}
 
-		var view = Unsafe.As<ListView>(list);
-		Attribute[] array = view._items;
+		var view = Unsafe.As<ListView<T>>(list);
+		T[] array = view._items;
 		int size = view._size;
 
-		return new ReadOnlySpan<Attribute>(array, 0, size);
+		return new ReadOnlySpan<T>(array, 0, size);
 	}
 }
-

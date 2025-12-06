@@ -72,12 +72,14 @@ public sealed partial class AttributeCollection
 			_current = default!;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static int GetVersion(List<Attribute> list)
 		{
-			ListView view = System.Runtime.CompilerServices.Unsafe.As<ListView>(list);
+			ListView<Attribute> view = Unsafe.As<ListView<Attribute>>(list);
 			return view._version;
 		}
-		private static bool IsVersionMismatch(int version, List<Attribute> list)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsVersionMismatch(int version, List<Attribute> list)
 		{
 			return version != GetVersion(list);
 		}

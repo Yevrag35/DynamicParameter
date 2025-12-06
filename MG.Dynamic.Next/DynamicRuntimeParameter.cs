@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace MG.Dynamic;
 
-public sealed class DynamicRuntimeParameter : RuntimeDefinedParameter
+public partial class DynamicRuntimeParameter : RuntimeDefinedParameter
 {
 	private readonly AttributeCollection _attributes;
 
