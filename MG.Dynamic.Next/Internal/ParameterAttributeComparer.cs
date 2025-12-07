@@ -1,8 +1,23 @@
 ﻿
 namespace MG.Dynamic.Internal;
 
-internal sealed class ParameterAttributeEquality : IEqualityComparer<ParameterAttribute>
+internal sealed class ParameterAttributeComparer : IComparer<ParameterAttribute>, IEqualityComparer<ParameterAttribute>
 {
+	public int Compare(ParameterAttribute? x, ParameterAttribute? y)
+	{
+		if (ReferenceEquals(x, y)) return 0;
+		if (x is null) return -1;
+		if (y is null) return 1;
+
+		int comparison = x.ParameterSetName.CompareTo(y.ParameterSetName);
+		if (comparison == 0)
+		{ 
+			comparison = x.Position.CompareTo(y.Position);
+		}
+
+		return comparison;
+	}
+
 	public bool Equals(ParameterAttribute? x, ParameterAttribute? y)
 	{
 		if (ReferenceEquals(x, y)) return true;

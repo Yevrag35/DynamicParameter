@@ -15,7 +15,7 @@ public sealed class DynamicRuntimeDictionary : RuntimeDefinedParameterDictionary
         _parent = parentLibrary;
     }
 
-    public void Add(DynamicRuntimeParameter parameter)
+    public void Add(RuntimeDefinedParameter parameter)
     {
         this.Add(parameter.Name, parameter);
     }

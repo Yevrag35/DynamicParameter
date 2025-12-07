@@ -18,7 +18,11 @@ public sealed class ValidateSetParameter<T> : DynamicRuntimeParameter where T : 
     }
     public bool TryGetResult([NotNullWhen(true)] out T? result)
     {
-        if (this.IsSet && this.Value is string key)
+        if (this.IsSet
+			&&
+			LanguagePrimitives.TryConvertTo(this.Value, out string? key)
+			&&
+			key is not null)
         {
             return _collection.TryGetResult(key, out result);
         }

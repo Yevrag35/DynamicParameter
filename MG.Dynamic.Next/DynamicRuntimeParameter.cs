@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace MG.Dynamic;
 
-public partial class DynamicRuntimeParameter : RuntimeDefinedParameter
+public partial class DynamicRuntimeParameter : RuntimeDefinedParameter, IEnumerable<Attribute>
 {
 	private readonly AttributeCollection _attributes;
 
@@ -51,6 +51,19 @@ public partial class DynamicRuntimeParameter : RuntimeDefinedParameter
 		_attributes = attributes;
 		GetAttributes(this) = _attributes;
     }
+
+	public AttributeCollection.Enumerator GetEnumerator()
+	{
+		return _attributes.GetEnumerator();
+	}
+	IEnumerator<Attribute> IEnumerable<Attribute>.GetEnumerator()
+	{
+		return this.GetEnumerator();
+	}
+	IEnumerator IEnumerable.GetEnumerator()
+	{
+		return this.GetEnumerator();
+	}
 
 	private static AttributeCollection ReturnAndOut(out AttributeCollection collection, ReadOnlySpan<Attribute> values)
 	{
