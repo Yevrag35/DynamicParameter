@@ -79,10 +79,11 @@ public partial class AttributeCollection
 			return view._version;
 		}
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsVersionMismatch(int version, List<Attribute> list)
+		private static bool IsVersionMismatch(int version, List<Attribute> list)
 		{
 			return version != GetVersion(list);
 		}
+		[DoesNotReturn]
 		private static void ThrowModified()
 		{
 			throw new InvalidOperationException("Collection was modified; enumeration operation may not execute.");

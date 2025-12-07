@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>MG.Dynamic.Tests.Module</RootNamespace>
     <AssemblyName>MG.Dynamic.Tests.Module</AssemblyName>
 	<Nullable>enable</Nullable>

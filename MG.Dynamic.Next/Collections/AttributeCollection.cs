@@ -165,9 +165,11 @@ public partial class AttributeCollection : Collection<Attribute>, IEnumerable<At
 
 	public ReadOnlySpan<ParameterAttribute> GetParameterAttributes()
 	{
-		return _allParameters is null
+		var span = _allParameters is null
 			? MemoryMarshal.CreateReadOnlySpan(in _paramAtt, 1)
-			: GetListAsSpan(_allParameters);
+			: CollectionsMarshal.AsSpan(_allParameters);
+
+		return span;
 	}
 
 	public bool TryAdd<T>(T attribute) where T : Attribute
@@ -458,7 +460,7 @@ public partial class AttributeCollection : Collection<Attribute>, IEnumerable<At
 		return collection switch
 		{
 			Attribute[] array => Create(values: array),
-			List<Attribute> list => Create(values: GetListAsSpan(list)),
+			List<Attribute> list => Create(values: CollectionsMarshal.AsSpan(list)),
 			_ => fromEnumerable(collection),
 		};
 
@@ -529,18 +531,5 @@ public partial class AttributeCollection : Collection<Attribute>, IEnumerable<At
 		internal T[] _items = null!;
 		internal int _size;
 		internal int _version;
-	}
-	private static ReadOnlySpan<T> GetListAsSpan<T>(List<T> list) where T : Attribute
-	{
-		if (list.Count == 0)
-		{
-			return [];
-		}
-
-		var view = Unsafe.As<ListView<T>>(list);
-		T[] array = view._items;
-		int size = view._size;
-
-		return new ReadOnlySpan<T>(array, 0, size);
 	}
 }

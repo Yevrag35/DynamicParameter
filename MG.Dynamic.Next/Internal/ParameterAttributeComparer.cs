@@ -11,7 +11,7 @@ internal sealed class ParameterAttributeComparer : IComparer<ParameterAttribute>
 
 		int comparison = x.ParameterSetName.CompareTo(y.ParameterSetName);
 		if (comparison == 0)
-		{ 
+		{
 			comparison = x.Position.CompareTo(y.Position);
 		}
 
@@ -26,7 +26,7 @@ internal sealed class ParameterAttributeComparer : IComparer<ParameterAttribute>
 
 		return x.Position == y.Position
 			&& x.ParameterSetName.Equals(y.ParameterSetName, StringComparison.Ordinal);
-    }
+	}
 
 	public int GetHashCode([DisallowNull] ParameterAttribute obj)
 	{
@@ -34,5 +34,5 @@ internal sealed class ParameterAttributeComparer : IComparer<ParameterAttribute>
 		code.Add(obj.Position);
 		code.Add(obj.ParameterSetName, StringComparer.Ordinal);
 		return code.ToHashCode();
-    }
+	}
 }

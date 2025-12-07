@@ -7,6 +7,9 @@ public partial class DynamicRuntimeParameter : RuntimeDefinedParameter, IEnumera
 {
 	private readonly AttributeCollection _attributes;
 
+	/// <inheritdoc cref="RuntimeDefinedParameter.Attributes"/>
+	public new AttributeCollection Attributes => _attributes;
+
 	/// <inheritdoc cref="RuntimeDefinedParameter.Name" path="/*[not(self::exception)]"/>
 	public new string Name
 	{
@@ -33,7 +36,8 @@ public partial class DynamicRuntimeParameter : RuntimeDefinedParameter, IEnumera
 		set => GetParameterTypeField(this) = value;
 	}
 
-	public DynamicRuntimeParameter(params ReadOnlySpan<Attribute> attributes) : this(AttributeCollection.Create(attributes))
+	public DynamicRuntimeParameter(params ReadOnlySpan<Attribute> attributes)
+		: this(AttributeCollection.Create(attributes))
 	{
 	}
 	public DynamicRuntimeParameter(string name, Type parameterType, params ReadOnlySpan<Attribute> attributes)
@@ -50,7 +54,7 @@ public partial class DynamicRuntimeParameter : RuntimeDefinedParameter, IEnumera
 	{
 		_attributes = attributes;
 		GetAttributes(this) = _attributes;
-    }
+	}
 
 	public AttributeCollection.Enumerator GetEnumerator()
 	{
