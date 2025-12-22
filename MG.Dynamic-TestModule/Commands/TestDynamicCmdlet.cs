@@ -1,11 +1,12 @@
-﻿using System.Management.Automation;
+﻿using MG.Dynamic.Parameters;
+using System.Management.Automation;
 
 namespace MG.Dynamic.Tests.Module.Commands;
 
 [Cmdlet(VerbsDiagnostic.Test, "Dynamic")]
 public sealed class TestDynamicCmdlet : PSCmdlet, IDynamicParameters
 {
-	const string ID = "Id";
+	private const string ID = "Id";
 	private ValidateSetParameter<int>? _param;
 
 	[Parameter(Mandatory = true, Position = 0)]
@@ -20,19 +21,15 @@ public sealed class TestDynamicCmdlet : PSCmdlet, IDynamicParameters
 
 		if (_param is not null) return _param;
 
-		_param = new();
-		_param.Name = ID;
-		_param.ParameterType = typeof(int);
+		_param = new()
+		{
+			Name = ID,
+			ParameterType = typeof(int)
+		};
 		_param.Attributes.DefaultParameter.Mandatory = true;
 		_param.Attributes.DefaultParameter.Position = 1;
 		_param.TryAddValidValue("14", 14);
 		_param.TryAddValidValue("13", 13);
-		//else if (_lib is null)
-		//{
-		//	_lib = new();
-		//	_param = _lib.Add<int>(ID);
-		//	_param.DefaultParameter.Mandatory = true;
-		//}
 
 		//return (RuntimeDefinedParameterDictionary)_lib;
 		return new RuntimeDefinedParameterDictionary

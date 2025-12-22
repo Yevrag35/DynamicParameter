@@ -1,6 +1,6 @@
 ﻿using MG.Dynamic.Collections;
 
-namespace MG.Dynamic;
+namespace MG.Dynamic.Parameters;
 
 public sealed class ValidateSetParameter<T> : DynamicRuntimeParameter where T : notnull
 {

@@ -1,7 +1,7 @@
 ﻿using MG.Dynamic.Collections;
 using System.Collections.ObjectModel;
 
-namespace MG.Dynamic;
+namespace MG.Dynamic.Parameters;
 
 public partial class DynamicRuntimeParameter : RuntimeDefinedParameter, IEnumerable<Attribute>
 {
